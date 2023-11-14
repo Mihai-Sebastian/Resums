@@ -803,47 +803,260 @@ Per desxifrar un fitxer, són necessàries dues claus:
 
 - **S'aguardava sense compliar ara compilar ANDROID**
 
+# Funcionament de les Aplicacions en Android (Històric)
 
+## 1. Compilació del Codi Font
+- **Llenguatge Utilitzat:** Java.
+- **Process:** Els desenvolupadors creaven aplicacions en Java i compilaven el codi font, resultant en arxius `.class`.
+
+## 2. Traducció a Codi Dalvik
+- **Eina:** `dx`, part del Android SDK.
+- **Process:** Els arxius `.class` eren traduïts a arxius `.dex`.
+
+## 3. Empaquetat de l'Aplicació
+- **Components:** Arxius `.dex` + altres arxius.
+- **Resultat:** Arxius `.apk`.
+
+## 4. Instal·lació de l'Aplicació
+- **Process:** Descompressió dels arxius `.dex`.
+
+## 5. Execució de l'Aplicació
+- **Motor d'Execució:** DVM (Dalvik Virtual Machine).
+- **Process:** El DVM carrega els arxius `.dex` i executa el codi de Dalvik.
+
+## 6. Interpretació i Compilació en Temps Real
+- **Metodologia:** JIT (Just In Time).
+- **Canvi:** Posteriorment, la compilació es realitzaria en temps real.
+
+# Funcionament de les Aplicacions en Android (Històric i Actualitzacions)
+
+## Històric: Dalvik Virtual Machine
+- **Compilació del Codi Font:** Java, arxius `.class`.
+- **Traducció a Codi Dalvik:** Utilitzant `dx` del Android SDK, a `.dex`.
+- **Empaquetat de l'Aplicació:** Creació d'arxius `.apk`.
+- **Instal·lació i Execució:** Descompressió i execució dels arxius `.dex` per DVM.
+- **Compilació en Temps Real:** Implementació de JIT (Just In Time).
+
+## Actualització: Android Runtime (ART)
+- **Introducció:** Començant amb Android 4.4 "Kit Kat".
+- **Substitució de DVM:** Completament substituït per ART en Android 5.0 "Lollipop".
+- **Compilació d'Arxius:** Es crea un arxiu de compilació durant la instal·lació de l'aplicació, eliminant la necessitat de compilar cada cop que s'executa.
+- **Optimització:** Millora en el rendiment i eficiència de l'aplicació.
+
+## Dades Addicionals
+- **Llançament d'Android:** Setembre del 2008.
+- **Gestió de Dades:** Utilitza una base de dades SQLite per emmagatzemar dades.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Contingut de apk -AndroidManifest.xml - classes.dex...**
 
+# Estructura d'un APK (Android Application Package)
+
+## AndroidManifest.xml
+- **Funció:** Arxiu de configuració de l'aplicació.
+- **Contingut:** 
+  - Nom, versió, drets d'accés, arxius de biblioteques.
+  - Punt d'entrada d'execució (Activity).
+  - Permisos de l'aplicació.
+
+## META-INF
+- **Contingut:** 
+  - **MANIFEST.MF:** L'arxiu manifest.
+  - **CERT.RSA:** Certificat de l'aplicació.
+  - **CERT.SF:** Llista de recursos i resum SHA-1.
+
+## Classes.dex
+- **Funció:** Conté classes compilades en format dex.
+- **Compatibilitat:** Comprensible per Dalvik i Android Runtime.
+
+## Res
+- **Funció:** Directori de recursos no compilats.
+- **Contingut:** Diferents recursos com imatges, layouts, etc.
+
+## resources.arsc
+- **Funció:** Conté recursos precompilats com XML binari.
+
+## lib
+- **Funció:** Directori de codi compilat específic d'una capa de software de processador.
+- **Subdirectoris:**
+  - **Armeabi:** Codi per processadors ARM.
+  - **Armeabi-v7a:** Per processadors ARMv7 o superiors.
+  - **Arm64-v8a:** Per tots els processadors ARMv8 asrm64 i superiors.
+  - **X86:** Codi per processadors x86.
+  - **X86_64:** Codi per processadors x86_64.
+  - **Mips:** Codi per processadors MIPS.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Sistema de fitxers utilitzava YAFFS - EXT4 (NORMALMENT) - F2FS - RFS**
 
+# Sistema de Fitxers en Android
+
+## YAFFS (Yet Another Flash File System)
+- **Ús:** Primer per a memòria Flash NAND.
+- **Característiques:**
+  - Wear leveling per augmentar la vida útil.
+  - Robustesa davant fallades d'energia.
+  - Redueix la sobrecàrrega de la memòria RAM.
+- **Versions:**
+  - YAFFS1: Limit a 1GiB, 218 fitxers, màxim 512 MiB per fitxer.
+  - YAFFS2: Limit a 8GiB.
+
+## EXT4
+- **Ús:** Des de Android 2.3 (Gingerbread).
+- **Avantatges:** Seguretat de dades, alta velocitat de lectura/escriptura.
+- **Comparació:** Més ràpid que YAFFS.
+
+## F2FS (Flash-Friendly File System)
+- **Ús:** Memòries SSD o targetes SD, utilitzat per Samsung, Motorola, etc.
+- **Rendiment:**
+  - 5 vegades més ràpid que EXT4 en accés a BBDD i escriptures aleatòries.
+  - 20% més lent en lectura seqüencial.
+
+## RFS (Robust File System)
+- **Ús:** Versions antigues de Samsung (ex: Samsung Galaxy S).
+- **Característiques:**
+  - Alta velocitat de lectura/escriptura.
+  - Menor resistència al desgast -> Possibles pèrdues de dades.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Que conté cada carpeta/partició ANDROID**
 
+# Sistema de Fitxers en Android
+
+## Particions Principals
+- **/system/:** Conté el sistema operatiu.
+- **/mnt/sdcard/ o /sdcard/:** Per a targetes SD montades (fitxers, música, fotos).
+- **/data/:** Dades de l'usuari i aplicacions.
+  - **/data/app/:** Emmagatzema les aplicacions.
+  - **/data/data/:** Guarda dades de les aplicacions amb un subdirectori per aplicació.
+
+## Particions Estàndar Internes
+- **/boot:** Conté els arxius necessaris per l'arrencada del sistema.
+- **/system:** Partició del sistema operatiu.
+- **/recovery:** Partició per al mode de recuperació.
+- **/data:** Emmagatzemament de dades d'usuari i aplicacions.
+- **/cache:** Emmagatzemament temporal de dades per aplicacions i el sistema.
+- **/misc:** Diverses informacions del sistema.
+
+## Particions de la Targeta SD
+- **/sdcard:** Emmagatzemament principal de la targeta SD.
+- **/sd-ext:** Partició addicional per a l'ampliació de l'emmagatzemament.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-- **Com arranca**
 
-
-
-  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **4 components - activities - services - content providers - Broadcast receivers**
 
+# Components de les Aplicacions Android
+
+## 1. Activity (Activitat)
+- **Funció:** Interacció amb l'usuari mitjançant una pantalla amb interfície d'usuari.
+- **Característiques:**
+  - Cada activitat és independent.
+  - Pot iniciar o ser iniciada per una altra activitat.
+- **Exemples:** Activitats per llegir, escriure correu, visualitzar correu d'entrada, etc.
+
+## 2. Services (Serveis)
+- **Funció:** Executar tasques en segon pla sense interfície d'usuari.
+- **Característiques:**
+  - Pot ser iniciat per una activitat o enllaçat per interactuar amb ella.
+  - Pot ser interromput pel sistema si es necessita memòria.
+  - Els serveis enllaçats es mantenen actius per dependències de l'aplicació o del sistema.
+- **Exemples:** Reproducció de música en segon pla, fons de pantalla animats, receptors de notificacions.
+
+## 3. Content Providers (Proveïdors de Continguts)
+- **Funció:** Administrar dades compartides de l'aplicació.
+- **Característiques:**
+  - Permet a altres aplicacions consultar o modificar dades si ho permet.
+  - Gestiona dades com contactes, permetent accés amb permisos adequats.
+- **Exemples:** Gestió de la informació de contacte de l'usuari.
+
+## 4. Broadcast Receivers (Receptors d'Emisions)
+- **Funció:** Rebre events del sistema o altres aplicacions fora del flux d'usuari habitual.
+- **Característiques:**
+  - Pot actuar sobre emissions del sistema o altres aplicacions.
+  - No necessita que l'aplicació estigui en execució per respondre a emissions.
+- **Exemples:** Rebre notificacions de baixa bateria, apagat de pantalla, alarmes programades.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **DEP i ASLR**
 
+# Tècniques de Seguretat de la Memòria
+
+## DEP (Data Execution Prevention)
+- **Objectiu:** Prevenir l'execució de codi en regions de memòria no destinades a això.
+- **Funcionament:** 
+  - Marca certes regions de memòria com a "no executables".
+  - Intent d'executar codi en aquestes regions resulta en una excepció o error.
+- **Benefici:** Protegeix contra certs tipus d'atacs, com els desbordaments de memòria.
+
+## ASLR (Address Space Layout Randomization)
+- **Objectiu:** Prevenir atacs basats en la predicció de l'adreça de memòria.
+- **Funcionament:** 
+  - Randomitza la ubicació en memòria de les estructures de dades clau (com arxius executables, biblioteques, píls d'execució, etc.).
+- **Benefici:** Incrementa la dificultat per als atacants de predir on està situat el codi, dificultant els atacs com els d'injecció de codi.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- **Com arranca**
 
+# Procés d'Arrencada d'Android
+
+## 1. Encès del Dispositiu
+- **Acció:** L'usuari encén el dispositiu.
+
+## 2. Carregador d'Arrencada (Bootloader)
+- **Funció:** Inicia el procés d'arrencada.
+- **Tasques:** 
+  - Comprova l'estat del maquinari i del software.
+  - Decideix quin sistema operatiu carregar.
+
+## 3. Carregador de l'Kernel (Linux Kernel)
+- **Funció:** Carrega el kernel de Linux.
+- **Tasques:**
+  - Inicialitza els components del maquinari.
+  - Configura els controladors necessaris.
+
+## 4. Init Process
+- **Funció:** Primera tasca del sistema.
+- **Tasques:**
+  - Monta els sistemes de fitxers.
+  - Inicia processos essencials com `servicemanager`, `logd`, etc.
+
+## 5. Zygote
+- **Funció:** Llança el procés de la Màquina Virtual d'Android.
+- **Tasques:**
+  - Càrrega classes comunes.
+  - Prepara per executar aplicacions Android.
+
+## 6. System Server
+- **Funció:** Inicia els serveis de sistema.
+- **Tasques:**
+  - Inicia serveis com `Activity Manager`, `Window Manager`.
+
+## 7. Carregador d'Interfície d'Usuari
+- **Funció:** Carrega la interfície d'usuari.
+- **Components:**
+  - Pantalla de bloqueig.
+  - Escriptori (launcher).
+
+## 8. Finalització
+- **Resultat:** El dispositiu està llest per a ser utilitzat.
+- **Accions de l'Usuari:** L'usuari pot interactuar amb l'aplicació i el sistema.
+
+
+
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
