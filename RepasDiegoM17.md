@@ -466,6 +466,25 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 ## iOS
 - **Sistema de fitxers iOS - particions**
 - **Característques APFS**
+# Sistema de Fitxers iOS
+
+## FileSystem HFSX
+- **Tipus**: Sistema Jeràrquic d'Arxius (HFSX).
+- **Detalls**: Una variació del HFS+ (Sistema Jeràrquic d'Arxius Extès).
+
+## Transició a APFS
+- **Substitució**: Per APFS (Sistema d'Arxius d'Apple) a partir del 2017.
+- **Raó**: Optimitzat per unitats flash i d'estat sòlid.
+- **Particions**: Conté 2 particions.
+
+## Característiques d'APFS
+1. **Suport per Unitats**: Especialment per unitats Flash i SSD, proporcionant més rapidesa i eficiència.
+2. **Còpies Instantànies**: Facilita backup i restauració ràpida.
+3. **Encriptació Integrada**: Augmenta la seguretat de les dades.
+4. **Optimització per Dispositius Mòbils**: Millora el rendiment i redueix el consum d'energia.
+5. **Desduplicació de Dades**: Ajuda a eliminar dades duplicades, estalviant espai.
+6. **Resistència a Errades**: Millora la gestió de problemes tant de hardware com de software.
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 - **Libreries Apple, NO SEGUR**
 - **Engegada - actualitzacions - funcionament**
 - **Secure Enclave - 2 tipus de Codi UID i GID**
