@@ -387,17 +387,17 @@ Un administrador configura els dispositius IoT mitjançant una interfície de l�
 - Implementar doble factor d'autenticació.
 - Requerir passwords forts i complexos.
 
-**7-Inseguretat al Núvol**
+**7- Inseguretat en les aplicacions mòbils**
 
 *Obstacles:*
-- Les interfícies no es revisen per vulnerabilitats de seguretat.
-- Hi ha presents passwords febles.
-- No hi ha doble factor d'autenticació.
+- Hi ha passwords febles.
+- No hi ha implementat factor de doble autenticació.
+- No hi ha cap mecanisme de bloqueig del compte.
 
 *Solucions:*
-- Avaluacions de seguretat de totes les interfícies del núvol.
-- Implementar doble factor d'autenticació.
-- Requerir passwords forts i complexos.
+- Implementar el bloqueig del compte després d'intents de connexió erronis.
+- Implementar doble factor d’autenticació..
+- Requerir passwords forts i complexos..
 
 **8-Inseguretat en els Dispositius IoT**
 
