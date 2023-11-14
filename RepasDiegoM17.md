@@ -487,6 +487,41 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 - **Libreries Apple, NO SEGUR**
 
+# Estructura de Particions en un Sistema Operatiu
+
+## Partició OS (Sistema Operatiu)
+
+### `/Library/`
+- Conté plugins del sistema i de configuració.
+- Exemples: àudio, bluetooth, etc.
+
+### `/private/`
+- Conté `/etc/` i `/var/`.
+- Inclou arxius com `fstab` (discos i particions) i `passwd`.
+
+### `/System/`
+- Conté les llibreries core del sistema.
+
+### `/usr/`
+- Conté binaris executables i dades de configuració horària.
+
+## Partició DATA (Dades)
+
+### `/Keychains/`
+- Conté "keychain.db", que són les contrasenyes d'usuari de diferents aplicacions.
+
+### `/Logs/`
+- Registres del sistema.
+
+### `/mobile/`
+- Informació d'aplicacions i configuració de l'usuari.
+- Exemples: Contactes, Calendari, Cookies, Mail, etc.
+
+### `/Preferences/`
+- Configuració referent als recursos de la xarxa.
+
+### `/Root/`
+- Informació del GPS i de certificats.
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
