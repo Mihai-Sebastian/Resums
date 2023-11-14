@@ -523,6 +523,8 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 ### `/Root/`
 - Informació del GPS i de certificats.
 
+
+
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Engegada - actualitzacions - funcionament
@@ -533,17 +535,108 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 
 - **Secure Enclave - 2 tipus de Codi UID i GID**
 
+# Secure Enclave
+
+## Definició
+- **Secure Enclave** és un coprocessador que forma part dels dispositius Apple, el qual incorpora un gestor de claus de seguretat basat en hardware, aïllat del processador principal.
+
+## Funcionalitats
+- **Encriptació de Dades**: 
+  - Les dades de la clau s'encripten dins del Secure Enclave utilitzant un sistema en un xip (SoC). 
+  - Aquest SoC inclou un generador de nombres aleatoris per a la seguretat addicional.
+
+- **Encriptació dels Arxius (Crypto Engine)**:
+  - Utilitza un sistema de xifrat dedicat AES de 256 bits.
+
+## Generació i Gestió de Claus
+- **Generació de Claus**: 
+  - Secure Enclave genera les seves pròpies claus de manera segura.
+- **Tipus de Claus**:
+  - **UID (Unique ID)**: Una clau única per a cada dispositiu.
+  - **GID (Device Group ID)**: Una clau comú per a cada família de processadors com A5, A6, etc.
+
+## Seguretat i Privacitat
+- **Esborrat de Claus**: 
+  - Les claus s'esborren de forma segura quan és necessari.
+- **Creació de Claus**:
+  - Les claus es creen durant la fabricació del dispositiu.
+- **Protecció contra Accés Extern**: 
+  - Cap software ni firmware pot llegir les claus directament.
+
+# Resum sobre l'UID, GID i la Seguretat en Dispositius iOS
+
+## UID (Unique ID)
+- **Associació amb Dispositiu**: Cada dispositiu té un UID únic.
+- **Seguretat en Transferències**: Si un component com el SSD intern es trasllada a un altre dispositiu, els arxius no són accessibles perquè l'UID no coincideix.
+
+## Generació de Claus Criptogràfiques
+- **Més enllà de l'UID i GID**: S'hi afegeixen altres claus criptogràfiques.
+- **Generador de Nombres Aleatoris (RNG)**: Les claus són creades mitjançant un algorisme basat en codi font CTR_DRBG.
+
+## Entropia del Sistema
+- **Generació d'Entropia**: Prové de variacions temporals durant l'arrencada i d'interrupcions de sincronització després d'arrencar el dispositiu.
+
+## Esborrat de Claus
+- **Seguretat en l'Esborrat**: El procés d'esborrat de les claus és tan segur com la seva creació.
+
+## Emmagatzematge Eficaç en iOS
+- **Effaceable Storage**: Funció dedicada a l'esborrat segur de dades en dispositius iOS.
+
+
+
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Procés d'engedada iOS**
 
+# Engegada del Dispositiu iOS
+
+## Protecció de l'Arrencada
+- **Protecció de l'Arrancada i Execució del SO**: Assegura que el software de nivell més baix no està manipulat.
+
+## Execució de Codi de Boot ROM
+- **Boot ROM (iBoot)**: A l'engegar-se, s'executa el codi de la Boot ROM.
+- **Confiança i Seguretat**: En la fabricació del xip s'estableix que el codi és segur (Arrel de confiança de hardware).
+- **Verificació del Codi**: La clau pública Apple Root CA de la Boot ROM verifica la signatura d'Apple abans de carregar el codi.
+
+## Etapes Post-Boot ROM
+- **Execució del Nucli d'iOS**: Després de l'iBoot, es verifica i executa el nucli d'iOS.
+- **LLB en Dispositius Antics**: Dispositius antics utilitzen el Low-Level Bootloader (LLB) abans del iBoot.
+
+## Gestió d'Errors
+- **Modes de Recuperació**: 
+  - Si la ROM d'arrencada no pot carregar el LLB, es passa al mode DFU.
+  - Si hi ha problemes amb LLB o iBoot, es passa al mode de recuperació.
+- **Restauració**: En ambdós casos, es necessita connectar a iTunes/Finder i restaurar a configuració de fàbrica.
+
+## Secure Enclave i BPR
+- **Secure Enclave**: Coprocessador que gestiona claus, aïllat del processador principal.
+- **BPR (Boot Progress Register)**: Secure Enclave utilitza el BPR per limitar l'accés a les dades en diferents modes (DFU, Mode de recuperació).
+
+## Autorització de Software de Sistema
+- **Prevenció de Retrocessos**: Evita el retorn a versions anteriors d'iOS amb vulnerabilitats.
+
+## Protecció del Nucli iOS
+- **Inicialització del Nucli iOS i KIP (Kernel Integrity Protection)**: Protegeix contra modificacions del codi del nucli i controladors.
+- **Controlador de Memòria**: Proveeix una regió de memòria física protegida per carregar el kernel i extensions.
+- **Restriccions Post-Arrencada**: Denega l'escriptura a la regió de memòria protegida i configura la MMU (Memory Management Unit) per a protegir la regió de memòria del nucli.
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Boot ROM (iBoot)**
 
+# Boot ROM (iBoot) en Dispositius iOS
+
+## Funció Principal
+- **Inicia el Procés d'Arrencada**: Actua com a primera etapa en el procés d'engegada del dispositiu.
+
+## Seguretat i Verificació
+- **Verifica la Integritat del Software**: Comprova que el software d'arrencada no estigui manipulat.
+- **Utilitza la Clau Pública Apple Root CA**: Per verificar la signatura d'Apple en el software.
+
+## Paper en la Seguretat del Dispositiu
+- **Forma part de l'Arrel de Confiança de Hardware**: Estableix la base de la seguretat del dispositiu des de l'inici.
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
