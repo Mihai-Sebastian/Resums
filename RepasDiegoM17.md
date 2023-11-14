@@ -270,9 +270,8 @@ El propòsit del model era proporcionar un marc comú per entendre la col·locac
 
 
 
+- **Disme 2 requeriment de seguretat de cada capa**
 
-
-  - **TOP 10 VULNERABILITATS OWASP**
 
 El problema de la securització de IoT és que afecta a molts
 àmbits:
@@ -312,7 +311,7 @@ Un administrador configura els dispositius IoT mitjançant una interfície de l�
 10. **Interfícies web segures:** Les interfícies web utilitzades en dispositius IoT han de ser segures i protegides contra diversos tipus de ciberatacs. Les instal·lacions d'inici de sessió han de ser resistents a l'atac. A més, els dispositius IoT interactuen amb aplicacions web mitjançant interfícies de programa d'aplicació (API), i les credencials utilitzades en aquestes interaccions també han de ser protegides per evitar possibles atacs.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+  - **TOP 10 VULNERABILITATS OWASP**
 - **Dis 3/4 vulnerabilitats del OWASP, 2 obstacle i solució de cada**
 
 **1-Inseguretat en les Aplicacions Web de Gestió d'IOT**
@@ -548,7 +547,7 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 - **Encriptació dels Arxius (Crypto Engine)**:
   - Utilitza un sistema de xifrat dedicat AES de 256 bits.
 
-## Generació i Gestió de Claus
+## Generació i Gestió de Claus.
 - **Generació de Claus**: 
   - Secure Enclave genera les seves pròpies claus de manera segura.
 - **Tipus de Claus**:
@@ -581,9 +580,6 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 
 ## Emmagatzematge Eficaç en iOS
 - **Effaceable Storage**: Funció dedicada a l'esborrat segur de dades en dispositius iOS.
-
-
-
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -642,30 +638,99 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 
 - **Que pasa quan es produeix error arrancada iOS**
 
+# Gestió d'Errors en Carregar o Verificar Etapes en Dispositius
 
+Els errors en el procés de càrrega o verificació en dispositius es gestionen de dues maneres, depenent del maquinari:
+
+## Tipus d'Errors i Modes de Resposta
+
+1. **Error amb la ROM d'Arrencada**:
+   - Aparells més antics no poden carregar LLB.
+   - Es necessita activar el **mode DFU** (Device Firmware Update).
+
+2. **Error amb LLB (Low Level Bootloader) o iBoot**:
+   - Requereix activar el **mode de recuperació**.
+
+## Pas a seguir en Ambdós Casos
+
+- El dispositiu ha de connectar-se a **iTunes/Finder** a través d'USB.
+- Cal realitzar una **restauració a la configuració predeterminada de fàbrica**.
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Utilitza update de software per no deixar tornar a verions anteriors iOS**
 
+# Autorització de Software de Sistema en iOS
+
+- **Objectiu**: Prevenir la regressió a versions anteriors d'iOS.
+- **Raó**: Versions més antigues poden contenir vulnerabilitats de seguretat.
+- **Benefici**: Impedeix l'explotació d'aquestes vulnerabilitats per atacants.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Per evitar que al carregar el kernel es protegeux la memòria MMU**
 
+# Gestió de Memòria Post-Arrencada
+
+- **Controlador de Memòria**:
+  - Denega l'escriptura a la regió de memòria física protegida un cop finalitzada l'arrencada.
+
+- **Unitat de Gestió de Memòria (MMU)**:
+  - Configurada per prevenir que el codi privilegiat surti fora de la regió de memòria protegida.
+  - Evita l'escriptura en el mapeig de memòria física dins la regió de memòria del nucli.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Update software nomes conegut per apple - com ho fa**
-- **Fica una serie de passos i harem d'ordenar - actualització en iOS POSIBLE PREGUNTA**
+- **Fica una serie de passos i haurem d'ordenar - actualització en iOS POSIBLE PREGUNTA**
+# Pas a Pas per Actualitzar iOS
 
+1. **Preparació de l'Actualització**:
+   - Només es proporciona software conegut i aprovat per Apple.
+
+2. **Inici de l'Actualització**:
+   - Utilitzar iTunes per descarregar la imatge sencera d'iOS o actualitzacions OTA (Over The Air) per a components específics.
+
+3. **Comunicació amb el Servidor d'Apple**:
+   - Durant l'actualització, iTunes o el dispositiu (en actualitzacions OTA) es connecten al servidor d'autorització d'instal·lació d'Apple.
+   - S'envia una llista de mesures criptogràfiques de cada component del paquet d'instal·lació (iBoot, el nucli, la imatge del sistema operatiu), juntament amb un valor aleatori antireproducció (nonce) i la identificació única de xip (ECID) del dispositiu.
+
+4. **Verificació del Servidor**:
+   - El servidor d'autorització compara les mesures amb les versions permeses per a la instal·lació.
+   - Si hi ha coincidència, afegeix l'ECID a la mesura i signa el resultat.
+
+5. **Recepció de Dades Signades**:
+   - El dispositiu rep un conjunt complet de dades signades del servidor com a part de l'actualització.
+   - L'ECID personalitza l'autorització per al dispositiu sol·licitant.
+
+6. **Seguretat i Verificació Final**:
+   - El servidor assegura que només es realitzen actualitzacions amb mesures conegudes i signades per Apple.
+   - La cadena de confiança d'arrencada del dispositiu verifica que la signatura és d'Apple i que la mesura de l'element carregat, combinada amb l'ECID, coincideix amb el que estava signat.
+   - El coprocessador Secure Enclave comprova que el software estigui signat i verificat per Apple abans de completar l'actualització.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - **Claus Clau de fitxer o Clau de classe.**
+# Creació i Desxifrat de Fitxers en la Partició de Dades
+
+## Creació de Fitxer
+
+- **Clau de Xifrat**: 
+  - Per a cada nou fitxer creat, es genera una clau única de 256 bits per al seu xifrat.
+- **Assignació de Clau de Classe**: 
+  - A més, a cada fitxer se li assigna una clau de classe específica.
+
+## Desxifrat de Fitxer
+
+Per desxifrar un fitxer, són necessàries dues claus:
+
+1. **Clau de Fitxer**: 
+   - La clau de 256 bits generada específicament per aquest fitxer.
+2. **Clau de Classe**: 
+   - La clau associada a la classe del fitxer.
 
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -675,12 +740,64 @@ Va crear un braç alimentat per bateries que utilitzava l’activitat elèctrica
 
 - **Que es TOUCH ID i FACE ID**
 
+# TOUCH ID i FACE ID
+
+## TOUCH ID
+- **Tipus**: Sistema de reconeixement d'empremtes digitals.
+- **Funcions**:
+  - Desbloqueig de dispositius.
+  - Autorització de compres en Apple Pay.
+  - Accés a apps i funcions protegides.
+
+## FACE ID
+- **Tipus**: Tecnologia de reconeixement facial avançada.
+- **Funcions**:
+  - Desbloqueig de dispositius.
+  - Autenticació segura per Apple Pay i altres serveis.
+  - Uso amb diverses expressions facials i variacions d'aparença.
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Android
 - **PAG 68 i 69**
 
+# Sistema Operatiu Android
+
+## Característiques Generals
+- **Basat en**: Kernel de Linux i software obert.
+- **Codi Font**: AOSP (Android Open Source Project) sota llicència d'Apache.
+- **Propietari**: Google.
+- **Aplicacions a Google Play**:
+  - 2018: 2 milions d'aplicacions.
+  - 2023: 3.200 milions d'aplicacions.
+
+## Altres Tendes d'Aplicacions
+- Exemple: F-Droid, tenda d'aplicacions de codi obert compatibles.
+
+## Execució d'Aplicacions
+- **Inicialment**:
+  - Utilitzava un framework Java.
+  - Màquina virtual Dalvik amb compilació en temps d'execució (JIT).
+- **Actualment**:
+  - Substitució de Dalvik per l'Android Runtime (ART).
+
+## Línies de Codi del Sistema
+- Total: 12 milions de línies.
+  - XML: 3 milions.
+  - C: 2,9 milions.
+  - Java: 2,2 milions.
+  - C++: 1,77 milions.
+
+## Desenvolupament d'Aplicacions
+1. **Compilació de Codi Font**: Desenvolupadors creen aplicacions en Java.
+2. **Traducció a Codi Dalvik**: Usant l'eina dx de l'Android SDK.
+3. **Empaquetat de l'Aplicació**: Arxius .dex combinats amb altres recursos en arxius .apk.
+4. **Instal·lació de l'Aplicació**: Descompressió dels arxius .dex.
+5. **Execució de l'Aplicació**: Inici de DVM, carrega els arxius .dex i executa el codi de Dalvik.
+6. **Compilació JIT**: Compilació en temps real Just In Time.
+
+## Gestió de Dades
+- **Base de Dades**: Utilitza SQLite per a la gestió de dades.
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
