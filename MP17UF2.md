@@ -72,6 +72,74 @@ Els atacs al DNS poden afectar tant el servidor i la xarxa local com les comunic
 
 Aquestes contramesures ajuden a protegir els serveis DNS contra una varietat d'atacs i a assegurar la integritat i la disponibilitat de les dades de noms de domini.
 
+# Atacs i Funcionament dels Mateixos
+
+Els atacs a sistemes de xarxa poden prendre diverses formes. Aquí s'expliquen alguns dels més comuns:
+
+## IP Spoofing
+- **Funcionament:** L'atacant falsifica l'adreça IP d'origen en els paquets enviats a la víctima per fer creure que els paquets provenen d'una font confiable o interna.
+
+## DNS Cache Poisoning
+- **Funcionament:** Aquest atac consisteix en introduir informació falsa en la caché DNS d'un servidor, redirigint així les peticions a un servidor maliciós controlat per l'atacant.
+
+## DoS (Denial of Service)
+- **Funcionament:** Els atacs DoS busquen sobrecarregar els recursos d'un sistema per fer que aquest deixi de prestar servei als usuaris legítims.
+
+## Man in the Middle (MitM)
+- **Funcionament:** L'atacant s'interposa en la comunicació entre dues parts, interceptant i potencialment modificat els missatges que s'intercanvien.
+
+## DNS Tunneling
+- **Funcionament:** Tècnica que utilitza el protocol DNS per enviar dades no-DNS, sovint per comunicar-se amb un servidor de comandament i control o per exfiltrar dades de manera encoberta.
+
+## DoS DNS Amplification Attack
+- **Funcionament:** Un atac d'amplificació DNS comença amb peticions DNS falsificades que tenen com a resposta missatges molt més grans. Aquests són enviats a la víctima, resultant en una sobrecàrrega de trànsit que pot provocar la denegació del servei.
+
+Cadascun d'aquests atacs explota diferents debilitats i requereix estratègies específiques de mitigació per assegurar la integritat i disponibilitat dels serveis de xarxa.
+
+# Assegurament del Servei DNS
+
+L'assegurament del servei DNS pot ser entès com una estructura de tres capes, cadascuna amb elements claus per a la seguretat:
+
+## 1. Entorn Base
+Aquesta capa inclou els components fonamentals del servei DNS a nivell de sistemes i comunicacions:
+- **Sistema operatiu:** Assegurar la configuració i les actualitzacions per tancar vulnerabilitats.
+- **Software de Bind:** Utilitzar la versió més segura i configurar adequadament.
+- **Topologia de xarxa:** Disposar els elements de xarxa de manera que minimitzin els riscos de seguretat.
+
+## 2. Dades
+Mesures de seguretat relacionades directament amb les dades gestionades pel servei DNS:
+- **Parametritzacions:** Aplicar les millors pràctiques en la configuració del DNS.
+- **Informació de registres de zona:** Protegir la integritat i confidencialitat dels registres.
+- **Transaccions:** Assegurar que les transaccions DNS siguin segures, incloent:
+  - **Queries (Consultes/Respostes):** Validar la informació que es passa en cada consulta i resposta.
+  - **Transferències de zona:** Utilitzar mètodes segurs com TSIG o DNSSEC per transferir dades de zona.
+  - **Notificacions:** Autenticar i verificar la integritat de qualsevol notificació DNS.
+  - **Actualitzacions dinàmiques:** Protegir les actualitzacions dinàmiques per evitar modificacions malicioses.
+
+La implementació de mesures de seguretat en cadascuna d'aquestes capes és crítica per assegurar la resiliència i la confiabilitat del servei DNS.
+
+## Transaccions: Protecció dels Missatges en Operacions DNS
+
+Per assegurar la seguretat del DNS, és vital protegir les transaccions i els missatges que es produeixen durant les operacions habituals. Aquí tenim un desglossament de les mesures de seguretat que s'han de considerar:
+
+### Queries: Consultes/Respostes
+- **Validació de la informació:** Assegurar-se que les dades rebudes són correctes i provinents de fonts legítimes.
+- **Utilització de DNSSEC:** Per a la validació de la integritat i autenticitat de les respostes DNS.
+
+### Transferències de Zona
+- **Autenticació amb TSIG:** Utilitzar signatures de transacció per validar la comunicació entre servidors DNS.
+- **Xifrat de transferències:** Empregar protocols com SSL/TLS per garantir la confidencialitat de les dades transferides.
+
+### Notificacions
+- **Verificació de la font:** Confirmar que les notificacions de canvis de zona provenen del servidor autoritatiu correcte.
+- **Seguretat en el protocol:** Implementar TSIG o DNSSEC per assegurar que les notificacions no han estat manipulades.
+
+### Actualitzacions Dinàmiques
+- **Control d'accés:** Restringir qui pot realitzar actualitzacions dinàmiques al DNS.
+- **Registre de canvis:** Mantenir un historial detallat de totes les actualitzacions per permetre la revisió i la recuperació en cas d'incidència.
+
+Aquestes pràctiques contribueixen a un entorn DNS més segur, reduint el risc d'atacs i la possibilitat de comprometre les operacions de la xarxa.
+
 
 
 
