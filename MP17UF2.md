@@ -140,6 +140,25 @@ Per assegurar la seguretat del DNS, és vital protegir les transaccions i els mi
 
 Aquestes pràctiques contribueixen a un entorn DNS més segur, reduint el risc d'atacs i la possibilitat de comprometre les operacions de la xarxa.
 
+# Assegurament del Servei DNS: Contramesures als Atacs
+
+## DNSSEC
+- **En què consisteix:** DNSSEC (DNS Security Extensions) és un conjunt d'extensions al DNS que proporcionen autenticació de l'origen de les dades del DNS, integritat de dades i rebut de resposta negativa. Això es realitza mitjançant una cadena de confiança construïda amb signatures digitals i claus públiques/privades.
+- **Funcionament:** Quan una consulta DNS es realitza, DNSSEC afegeix signatures digitals a les respostes. Els resolvent DNS verifiquen aquestes signatures mitjançant claus públiques que han estat distribuïdes per mitjà de la infraestructura de clau pública del DNS.
+
+## Xifratge DNS
+- **DNS over TLS (DoT):**
+  - **Port usat:** 853
+  - **Funcionament:** DoT encapsula el tràfic DNS dins de la capa de seguretat del transport (TLS), proporcionant confidencialitat i integritat de dades entre el client i el servidor DNS.
+  
+- **DNS over HTTPS (DoH):**
+  - **Port usat:** 443
+  - **Funcionament:** DoH passa el tràfic DNS a través del protocol HTTPS, que utilitza TLS per encriptar les dades. Això no només protegeix la comunicació sinó que també la fa indistingible d'altres tipus de tràfic HTTPS, augmentant la privadesa.
+
+- **Ports estàndard:**
+  - Les consultes DNS tradicionals utilitzen el port **53 UDP** per a les transaccions ràpides i no xifrades.
+
+L'adopció de DNSSEC, DoT i DoH són passos claus per millorar la seguretat en les consultes DNS, protegint contra una àmplia gamma d'atacs com el DNS spoofing i les intercepcions de tràfic.
 
 
 
