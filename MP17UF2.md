@@ -160,5 +160,188 @@ Aquestes pràctiques contribueixen a un entorn DNS més segur, reduint el risc d
 
 L'adopció de DNSSEC, DoT i DoH són passos claus per millorar la seguretat en les consultes DNS, protegint contra una àmplia gamma d'atacs com el DNS spoofing i les intercepcions de tràfic.
 
+# FTP
+# File Transfer Protocol (FTP)
+
+- **Definició**: Protocol de transferència de fitxers.
+- **Funció**: Protocol de xarxa per la transferència de fitxers entre sistemes (ordinadors) connectats a una xarxa TCP, basat en l'arquitectura client-servidor.
+- **Compatibilitat**: Permet enviar fitxers entre ordinadors independentment del seu sistema operatiu.
+- **Ubicació en el Model TCP/IP**: Forma part de la capa d'aplicació (Capa 5).
+- **Ports de Xarxa**: Utilitza normalment el port 20 (per a dades) i el port 21 (per a comandes i flux de control).
+- **Seguretat**: Inicialment dissenyat per a oferir la màxima velocitat, però no la màxima seguretat. L'informació de login-password i la transferència de fitxers es realitzen en text pla, sense xifratge.
+
+# Deficiències de Seguretat del FTP i Solucions
+
+## Deficiències del FTP
+
+FTP, dissenyat per oferir la màxima velocitat de connexió, presenta una sèrie de deficiències importants en termes de seguretat:
+
+- **Mecanisme de Login-Password**: 
+  - Problema: El servidor FTP no pot garantir que l'usuari sigui realment qui diu ser.
+  - Conseqüència: Vulnerabilitat en la verificació d'identitat.
+
+- **Contrasenyes en Text Clar**: 
+  - Problema: Les contrasenyes s'envien sense xifrar.
+  - Conseqüència: Amb un sniffer, es poden capturar fàcilment aquestes contrasenyes.
+
+- **No Xifra la Sessió FTP**: 
+  - Problema: Tota la informació transferida, inclosos els arxius, es fa en text pla.
+  - Conseqüència: Possibilitat d'interceptar i llegir el contingut de la transferència.
+
+## Solucions
+
+Per afrontar aquestes deficiències, s'han desenvolupat alternatives que ofereixen millors garanties de seguretat:
+
+- **SCP (Secure Copy Protocol)**:
+  - Forma part del paquet de SSH (Secure Shell).
+  - Funció: Permet la transferència segura de fitxers entre sistemes, xifrant tota la informació transferida.
+
+- **SFTP (SSH File Transfer Protocol)**:
+  - També inclosa en el paquet SSH.
+  - Funció: Ofereix una interfície similar al FTP, però amb totes les comunicacions xifrades, garantint la seguretat de les dades.
+
+## Llista Blanca vs Llista Negra
+
+- **Llista Blanca**: Metodologia de seguretat on només s'allowen accions, processos o entitats específiques considerades segures.
+- **Llista Negra**: Enfocament on es bloquegen accions, processos o entitats específiques conegudes per ser nocives o no segures.
+
+## Alternatives al FTP
+
+- **FTPS (File Transfer Protocol Secure)**:
+  - Afegeix xifratge SSL/TLS al FTP.
+  - Protegeix tant les credencials d'usuari com les dades transferides.
+
+- **SFTP (SSH File Transfer Protocol)**:
+  - Part del paquet de Secure Shell (SSH).
+  - Xifra tota la sessió de transferència de fitxers, incloent l'autenticació i les dades.
+    
+## Algoritmes de Transferència de Fitxers
+
+- **Algoritmes de Control de Flux**: FTP utilitza algoritmes de control de flux TCP per a la gestió de la transferència de dades.
+- **Modus de Transferència de Fitxers**: Inclou algoritmes per a la transferència en mode ASCII o binari, depenent del tipus de fitxer.
+
+Per defecte, FTP no utilitza algoritmes de xifratge per a la protecció de dades:
+
+- **Transferència de Dades**: Les dades es transfereixen en text pla, sense xifratge.
+- **Autenticació d'Usuari**: Les credencials d'usuari també es transmeten en text pla.
+
+# FTP Actiu vs. FTP Passiu
+
+## FTP Actiu
+
+### Funcionament
+- En el mode FTP actiu, el client inicia la connexió al servidor FTP a través del port 21 (port de comandes).
+- Després de l'autenticació, el servidor inicia la connexió de dades cap al client des d'un port aleatori al port 20 del client.
+
+### Canals i Ports
+- **Canal de Comandes**: Client (port aleatori) → Servidor (port 21).
+- **Canal de Dades**: Servidor (port aleatori) → Client (port 20).
+
+## FTP Passiu
+
+### Funcionament
+- En el mode FTP passiu, el client també inicia la connexió al servidor FTP a través del port 21.
+- A diferència del mode actiu, en el mode passiu, després de l'autenticació, el servidor informa al client un port aleatori per al qual el client haurà d'iniciar la connexió de dades.
+
+### Canals i Ports
+- **Canal de Comandes**: Client (port aleatori) → Servidor (port 21).
+- **Canal de Dades**: Client (port aleatori) → Servidor (port aleatori).
+
+## Diferències Clau
+- La principal diferència entre els modes actiu i passiu està en qui inicia la connexió de dades i a través de quins ports.
+- El mode passiu és més adequat per a clients darrere de firewalls o NAT, ja que permet al client controlar les connexions entrants i sortints.
+
+# Atacs i Vulnerabilitats en Servidors FTP
+
+## Atacs Comuns
+
+### Per Força Bruta
+- Intentos repetits d'accés mitjançant la combinació de noms d'usuari i contrasenyes fins a trobar la correcta.
+
+### Rebot FTP
+- Utilització d'un servidor FTP vulnerable per a rebotar el tràfic i amagar la font real de l'atac.
+
+### Robatori de Ports
+- Intercepció de la connexió FTP després de l'autenticació per prendre el control de la sessió.
+
+### Attack Spoofing
+- Suplantació de l'adreça IP d'un client legítim per enganyar el servidor i guanyar accés.
+
+### DoS - DDoS
+- Atacs de denegació de servei (DoS) i atacs de denegació de servei distribuït (DDoS) per sobrecarregar el servidor.
+
+## Vulnerabilitats Comunes
+
+### Software del Servidor No Actualitzat
+- Riscos associats amb l'ús de versions antigues del software del servidor, que poden contenir falles de seguretat conegudes.
+
+### Software del Servidor Mal Configurat
+- Problemes deguts a una configuració incorrecta o insegura del servidor FTP.
+
+### Molts Administradors
+- Risc augmentat d'errors humans o de seguretat quan hi ha massa persones amb accés administratiu.
+
+### Protocols o Xifratge Ja Vulnerats
+- Vulnerabilitats relacionades amb l'ús de protocols de xifratge obsolets o insegurs.
+
+### Entorn Difícil d’Administrar
+- Complexitat en la gestió i la supervisió de l'entorn de xarxa pot conduir a brexes de seguretat.
+
+### Falta d’Alertes o Pistes per Auditoria (LOGS)
+- Absència de sistemes adequats per a la detecció de comportaments anòmals o la falta de registres per a la realització d'auditories de seguretat.
+
+## Conclusió
+La protecció dels servidors FTP requereix una vigilància constant, actualitzacions de software, configuracions segures, i una gestió adequada tant dels accessos com dels protocols i sistemes de registre.
+
+# Mesures de Seguretat per a Servidors FTP
+
+## Deshabilitar Estàndard FTP: Alternatives Més Segures
+- **FTPS**: Utilització de FTP sobre SSL/TLS per a xifrar la sessió.
+- **SFTP**: Part del protocol SSH, proporciona una transferència de fitxers segura i xifrada.
+
+## Encriptació i Hashos Robustos
+- Utilitzar algoritmes de xifratge forts.
+- Emprar hashos robustos per a l'emmagatzematge segur de contrasenyes.
+
+## Instal·lació del Servidor Darrera d'un Gateway
+- Protegir el servidor col·locant-lo darrera d'un gateway de seguretat.
+
+## Llistes Blanques i Negres d'IPs
+- Restringir o permetre accés basant-se en adreces IP específiques.
+
+## Assegurar Servidor FTPS
+- **Mode Explícit**: Negociació explícita del xifratge.
+- **Mode Implícit**: Xifratge per defecte en tota la connexió.
+- Utilitzar TLS 1.2 i certificats SSL per a la seguretat de la connexió.
+
+## Gestió Administrativa del Compte
+- Credencials separades del servidor FTP.
+- Deshabilitar usuari anònim.
+- No compartir comptes d'usuari.
+- Deshabilitar comptes després d'un cert nombre d'errors d'inici de sessió.
+
+## Política de Contrasenyes Fortes
+- Exigir contrasenyes complexes i canvis regulars.
+
+## Implementació de Seguretat a Nivell de Carpetes
+- Configurar permisos adequats.
+- Aplicar xifratge i quotes de disc on sigui necessari.
+
+## Facilitar l'Administració
+- Utilitzar autenticació AD o LDAP.
+- Restringir l'accés a administradors des de xarxes externes.
+- Evitar l'ús de noms de compte per defecte com 'admin' o 'root'.
+- Restringir els permisos d'administració.
+
+## Seguir Bones Pràctiques de Seguretat
+- Mantenir-se informat sobre les millors pràctiques en seguretat de xarxes.
+
+## Altres Mesures
+- Implementar un clúster d'alta disponibilitat.
+- Unificar tipus de servidors FTP per a una millor gestió.
+- Habilitar l'auditoria del servidor FTP.
+- Configurar alertes basades en els logs del sistema.
+- Bloquejar la gestió remota del servidor FTP.
 
 
+  
