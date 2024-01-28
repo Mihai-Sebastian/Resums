@@ -262,7 +262,7 @@ Per defecte, FTP no utilitza algoritmes de xifratge per a la protecció de dades
 - Utilització d'un servidor FTP vulnerable per a rebotar el tràfic i amagar la font real de l'atac.
 
 ### Robatori de Ports
-- Intercepció de la connexió FTP després de l'autenticació per prendre el control de la sessió.
+- Endevinar el proper port obert i usurpar una connexió legítima
 
 ### Attack Spoofing
 - Suplantació de l'adreça IP d'un client legítim per enganyar el servidor i guanyar accés.
