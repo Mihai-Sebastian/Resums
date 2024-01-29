@@ -343,5 +343,266 @@ La protecció dels servidors FTP requereix una vigilància constant, actualitzac
 - Configurar alertes basades en els logs del sistema.
 - Bloquejar la gestió remota del servidor FTP.
 
+# Servei de Correu Electrònic: Seguretat i Atacs
+
+## Principals Atacs: Phishing vs. Spoofing
+
+### Phishing
+- **Basat en**: Enganyar als destinataris perquè revelin informació sensible o realitzin accions específiques.
+- **Metodologia**: Sovint utilitza correus electrònics que semblen ser de fonts fiables però que són fraudulents.
+
+### Spoofing
+- **Basat en**: Falsificació de la identitat de l'enviador.
+- **Metodologia**: Manipula l'encapçalament del correu electrònic per fer creure que prové d'una font legítima.
+
+## Protocol SPF (Sender Policy Framework)
+
+### Funcionament
+- Verifica si l'IP de l'enviador està autoritzada per enviar correus en nom del domini.
+- Es basa en registres TXT a DNS que especifiquen quines IP estan autoritzades.
+
+## Protocol DKIM (DomainKeys Identified Mail)
+
+### Funcionament
+- Utilitza xifratge amb clau pública/privada per garantir que el contingut del correu no ha estat modificat durant el trànsit.
+- Una clau privada xifra l'encapçalament del correu i una clau pública al DNS del domini serveix per a la seva verificació.
+
+## Estàndard DMARC (Domain-based Message Authentication, Reporting and Conformance)
+
+### Funcionament
+- Combina SPF i DKIM per validar l'origen dels correus.
+- Defineix com tractar els correus que no passen les verificacions i proporciona informes sobre els intents de lliurament.
+
+# Mesures per a l'Ús Segur del Correu Electrònic
+
+## Mesures Quan es Rep un Correu Electrònic
+
+- **Comprovar el Remitent**: 
+  - Utilitzar eines com Whois per identificar el propietari del domini.
+  - Examinar detalls a la capçalera del correu per a verificació addicional.
+
+- **Precaució amb Enllaços Sospitosos**:
+  - Evitar obrir enllaços directament.
+  - Situar el cursor sobre l'enllaç per previsualitzar l'URL.
+  - Teclejar manualment els enllaços al navegador.
+
+- **Solució Antimalware**:
+  - Tenir un sistema antimalware per escanejar els correus entrants.
+
+- **Contrasenyes Robustes i Autenticació de Doble Factor**:
+  - Utilitzar contrasenyes fortes i úniques.
+  - Implementar autenticació de doble factor en comptes de correu crítics.
+  - No marcar l'opció de "recordar contrasenya".
+
+- **Evitar Connexions Públiques**:
+  - No utilitzar el correu electrònic des de connexions Wi-Fi públiques o ordinadors compartits.
+
+- **Xifratge de Correus Electrònics**:
+  - Utilitzar estàndards com PGP o S/Mime per a la signatura electrònica i xifratge.
+
+- **Gestió de Correu Spam**:
+  - No respondre a correus spam.
+  - Afegir remitents de spam a la llista negra i eliminar els correus no desitjats.
+
+## Mesures Addicionals
+
+- **Desactivar l'HTML en Correus**:
+  - Evitar la inclusió de llenguatges que podrien ser usats per a fins il·lícits.
+  - Deshabilitar macros i descàrrega automàtica d'imatges.
+
+- **Usar Còpia Oculta en Enviaments Massius**:
+  - Per protegir les adreces de correu dels destinataris.
+
+- **Separació del Correu Corporatiu i Personal**:
+  - No utilitzar comptes de correu electrònic corporatius per a fins personals.
+
+- **Gestió de Fitxers Adjunts**:
+  - Habilitar l'opció de mostrar extensions de fitxers.
+  - Utilitzar eines com Virustotal per a verificar els adjunts.
+  - Desconfiar de fitxers amb noms enganyosos o extensions ocultes.
+
+## Interpretació de Capçaleres de Correus Electrònics
+
+- **Dades Identificables**:
+  - Informació sobre l'emissor i receptor.
+  - Servidors de correu intermitjos.
+  - Client de correu utilitzat per l'enviament.
+  - Dates d'enviament i recepció.
+
+# Signatura i Xifratge amb OpenPGP
+
+## OpenPGP: Estàndard de Codi Obert Basat en PGP
+
+- **Descripció**: OpenPGP és un estàndard de codi obert per al xifratge i la signatura digital, basat en el mètode de xifratge Pretty Good Privacy (PGP).
+
+## Sistema de Criptografia de Clau Pública
+
+- Utilitza parelles de claus pública-privada per a les següents funcions:
+  - **Clau Privada de l'Emissor**: Utilitzada per a la signatura de la informació.
+  - **Clau Pública de l'Emissor**: Permet als destinataris comprovar la signatura.
+  - **Clau Pública del Destinatari**: Utilitzada per a xifrar el correu abans d'enviar-lo.
+  - **Clau Privada del Destinatari**: Utilitzada pel destinatari per desxifrar el correu rebut.
+
+## Utilitats Principals d'OpenPGP
+
+1. **Comprovació de l'Autenticitat i Integritat**:
+   - Empra tècniques de xifratge per verificar qui ha enviat un missatge i que aquest no ha estat modificat.
+
+2. **Xifratge del Contingut del Correu**:
+   - Xifra tant el contingut del missatge com els arxius adjunts, garantint la confidencialitat.
+
+## Exemple de Configuració i Ús
+
+- **Configuració Inicial**:
+  - Generació de la parella de claus pública i privada.
+  - Distribució de la clau pública a destinataris o a un servidor de claus públiques.
+
+- **Enviant un Correu Xifrat**:
+  - Xifrar el missatge utilitzant la clau pública del destinatari.
+  - Signar el missatge amb la pròpia clau privada.
+
+- **Rebent i Verificant un Correu**:
+  - Utilitzar la clau privada pròpia per desxifrar el missatge rebut.
+  - Comprovar la signatura del missatge amb la clau pública de l'emissor.
+
+## Conclusió
+
+OpenPGP proporciona una solució eficaç per a la seguretat del correu electrònic, oferint eines per a la confidencialitat, l'autenticació i la integritat dels missatges.
+
+# Arquitectura de Serveis Web
+
+L'arquitectura dels serveis web implica la interacció entre tres parts principals:
+
+## Proveïdor de Serveis Web (Service Provider)
+- **Funció**: Ofereix i implementa el servei web.
+- **WSDL**: Envía un fitxer WSDL (Web Services Description Language) al publicador amb la definició del servei web.
+
+## Qui Publica (Service Broker)
+- **Intermediari**: Actua com a intermediari entre el proveïdor i el sol·licitant del servei.
+- **Registre de Serveis**: Manté un registre dels serveis disponibles.
+  
+## Qui Demana el Servei (Service Requester)
+- **Descobriment del Servei**: Contacta amb el publicador per descobrir qui és el proveïdor utilitzant el protocol WSDL.
+- **Solicitud del Servei**: Una vegada identificat el proveïdor, contacta amb ell mitjançant el protocol SOAP.
+
+
+## Comunicació i Validació
+- **Petició de Servei**: El proveïdor valida la petició de servei.
+- **Resposta**: Envía les dades estructurades en format XML usant SOAP.
+- **Validació per Part del Sol·licitant**: El sol·licitant valida el fitxer XML rebut fent servir un fitxer XSD (XML Schema Definition).
+
+## Conclusió
+Aquesta arquitectura facilita la comunicació i intercanvi de dades entre diferents parts, utilitzant estàndards i protocols com WSDL, SOAP, i XSD per a garantir una correcta definició, comunicació i validació dels serveis web.
+
+# Arquitectura WSDL en Serveis Web
+
+## WSDL (Web Services Definition Language)
+
+### Descripció General
+- **Natura**: Un llenguatge basat en XML.
+- **Funció**: Descriu els serveis oferts per un servei web i com accedir-hi.
+
+### Característiques del WSDL
+- **Orientat a Màquina**: El format del WSDL està dissenyat per ser interpretat per una màquina, no per ser llegit directament per humans.
+- **No Essencial per la Comunicació**: El fitxer WSDL no és estrictament necessari per a la comunicació, però és vital per entendre els serveis oferts si no es coneixen prèviament.
+
+### Estructura del Fitxer WSDL
+- **Element Arrel**: `<definitions>` és l'element arrel del document XML.
+- **Ús de XSD**: Utilitza XML Schema Definition (XSD) per a definir els tipus de dades involucrats en el servei.
+- **Contingut**: Inclou detalls com operacions, missatges i protocols suportats pel servei web.
+
+## Conclusió
+El WSDL és un component clau en l'arquitectura dels serveis web, proporcionant una descripció estàndard i completa dels serveis disponibles i com interactuar amb ells.
+
+# Arquitectura SOAP en Serveis Web
+
+## SOAP (Simple Object Access Protocol)
+
+### Descripció General
+- **Tipus**: Protocol basat en XML.
+- **Funció**: Permet l'intercanvi d'informació entre aplicacions.
+
+### Característiques del SOAP
+- **Esquema XML (XSD)**: Disposa d'un esquema XML determinat.
+- **Independència**: Independent del llenguatge de programació o plataforma.
+- **Regles de Comunicació**: Defineix el format dels missatges, les regles d'intercanvi de missatges, gestió d'errors, i com interactuar amb altres protocols.
+
+## Estructura del Missatge SOAP
+
+### SOAP Envelope
+- **Funció**: Element arrel que identifica el missatge com un missatge SOAP.
+
+### SOAP Header
+- **Contingut**: Informació sobre autenticació, codificació de dades, i instruccions sobre com processar el missatge.
+
+### SOAP Body
+- **Contingut**: La informació principal a ser intercanviada entre les aplicacions.
+- **Basat en**: El seu format està basat en l'especificació WSDL del servei.
+
+### SOAP Fault
+- **Funció**: Conté informació sobre errors en cas que es produeixin.
+- **Detalls**: Proporciona detalls específics sobre la naturalesa de qualsevol error ocorregut durant el processament del missatge.
+
+## Conclusió
+SOAP és un protocol estàndard per a l'intercanvi d'informació en l'arquitectura de serveis web, amb una estructura de missatge ben definida que facilita la comunicació i gestió d'errors entre aplicacions diferents.
+
+# Atacs i Vulnerabilitats en Serveis Web
+
+## Divulgació WSDL
+
+### Descripció
+- La divulgació WSDL ocorre quan els arxius WSDL d'un servei web estan massa exposats o accessibles públicament.
+
+### Riscos
+- Pot revelar informació detallada sobre l'estructura i funcionament dels serveis web.
+
+### Contramesures
+- Restringir l'accés als arxius WSDL.
+- No exposar informació sensible a través del WSDL.
+
+## Bomba XML
+
+### Descripció
+- Una bomba XML és un atac que utilitza documents XML maliciosament dissenyats per consumir recursos del sistema.
+
+### Riscos
+- Pot causar un esgotament de recursos i denegació de servei.
+
+### Contramesures
+- Limitar la mida i la complexitat dels documents XML processats.
+- Utilitzar eines de processament XML que previnguin aquest tipus d'atac.
+
+## Injecció XPath
+
+### Descripció
+- Aquest atac s'aprofita de les vulnerabilitats en el codi que utilitza consultes XPath, inserint dades malicioses.
+
+### Riscos
+- Pot permetre als atacants manipular consultes i accedir a dades no autoritzades.
+
+### Contramesures
+- Validar i sanejar totes les entrades dels usuaris.
+- Utilitzar declaracions preparades o APIs que protegeixen contra aquesta vulnerabilitat.
+
+## Injecció XML
+
+### Descripció
+- L'injecció XML es produeix quan un atacant pot inserir contingut XML maliciós en un sistema.
+
+### Riscos
+- Permet l'execució de comandes malicioses, accés a dades confidencials, i altres atacs.
+
+### Contramesures
+- Validar tot el contingut XML contra un esquema conegut i segur.
+- Utilitzar llistes blanques per a elements i atributs permesos en documents XML.
+
+## Conclusió
+
+És vital per a les organitzacions implementar fortes mesures de seguretat per prevenir i mitigar aquests tipus d'atacs en serveis web, especialment en entorns que processen gran quantitat de dades a través de formats com XML i utilitzen tecnologies com WSDL i XPath.
+
+
+
+
+
 
   
