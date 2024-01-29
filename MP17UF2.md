@@ -550,6 +550,14 @@ SOAP és un protocol estàndard per a l'intercanvi d'informació en l'arquitectu
 
 ## Divulgació WSDL
 
+Els serveis web s'utilitzen normalment en escenaris de transaccions
+comercials entre empreses o backend. Només haurien de ser coneguts per
+un grup de persones.
+• Hi ha serveis web "ocults" que realitzen operacions crítiques. (pagaments,
+processament de dades entre negocis, ...)
+• Es poden produir atacs per tal de descobrir serveis web no públics
+recuperant el fitxer WSDL.
+
 ### Descripció
 - La divulgació WSDL ocorre quan els arxius WSDL d'un servei web estan massa exposats o accessibles públicament.
 
@@ -561,6 +569,13 @@ SOAP és un protocol estàndard per a l'intercanvi d'informació en l'arquitectu
 - No exposar informació sensible a través del WSDL.
 
 ## Bomba XML
+
+Document XML petit dissenyat per expandir-se a una mida enorme quan
+sigui processat per un parser(analitzador sintàctic) XML desprotegit.
+• S'usen crides recursives (permeses pel DTD (definició del tipus de
+document)) per créixer de manera exponencial.
+• L'atac produeix una DoS. (Es carrega 2³² A's a la memòria del servidor)
+• ZERO= A, ONE= AA, TWO=AAAA, …, THIRTYTWO=A32
 
 ### Descripció
 - Una bomba XML és un atac que utilitza documents XML maliciosament dissenyats per consumir recursos del sistema.
@@ -574,6 +589,13 @@ SOAP és un protocol estàndard per a l'intercanvi d'informació en l'arquitectu
 
 ## Injecció XPath
 
+XPath és un llenguatge usat per consultar certs parts del document XML,
+semblant a l'SQL.
+• En alguns casos, els paràmetres dintre el cos dels missatges SOAP, s'usen
+directament com a input per la consulta XPath.
+• Un atacant podria modificar la consulta XPath per obtenir tot el
+document XML.
+
 ### Descripció
 - Aquest atac s'aprofita de les vulnerabilitats en el codi que utilitza consultes XPath, inserint dades malicioses.
 
@@ -585,6 +607,13 @@ SOAP és un protocol estàndard per a l'intercanvi d'informació en l'arquitectu
 - Utilitzar declaracions preparades o APIs que protegeixen contra aquesta vulnerabilitat.
 
 ## Injecció XML
+
+XPath és un llenguatge usat per consultar certs parts del document XML,
+semblant a l'SQL.
+• En alguns casos, els paràmetres dintre el cos dels missatges SOAP, s'usen
+directament com a input per la consulta XPath.
+• Un atacant podria modificar la consulta XPath per obtenir tot el
+document XML.
 
 ### Descripció
 - L'injecció XML es produeix quan un atacant pot inserir contingut XML maliciós en un sistema.
@@ -600,7 +629,138 @@ SOAP és un protocol estàndard per a l'intercanvi d'informació en l'arquitectu
 
 És vital per a les organitzacions implementar fortes mesures de seguretat per prevenir i mitigar aquests tipus d'atacs en serveis web, especialment en entorns que processen gran quantitat de dades a través de formats com XML i utilitzen tecnologies com WSDL i XPath.
 
+# Servei de VoIP (Veu sobre IP)
 
+## Descripció General
+
+- **Definició**: VoIP (Veu sobre Protocol d'Internet) és una tecnologia que permet la transmissió de veu i altres serveis de telecomunicacions sobre xarxes IP.
+
+## Avantatges i Inconvenients Comparats amb la Telefonia Convencional
+
+### Avantatges
+- **Cost Reduït**: Generalment ofereix un cost menor, especialment en trucades internacionals.
+- **Flexibilitat i Portabilitat**: Permet als usuaris fer i rebre trucades des de qualsevol lloc amb accés a Internet.
+- **Integració amb Altres Serveis**: Facilita la integració amb altres serveis basats en IP.
+
+### Inconvenients
+- **Dependència de la Connexió a Internet**: Requereix una connexió a Internet estable i de bona qualitat.
+- **Problemes de Latència i Jitter**: Pot experimentar retards o variacions en la transmissió de veu.
+- **Seguretat**: Pot ser més susceptible a atacs cibernètics.
+
+## Elements Clau en VoIP
+
+### Terminals
+- Dispositius finals utilitzats per a la comunicació, com telèfons IP o softphones en ordinadors.
+
+### Gateways
+- Actuen com a ponts entre la xarxa de telefonia tradicional i la xarxa IP.
+
+### Gatekeepers
+- Gestiona la connexió i l'autorització d'accés en xarxes VoIP basades en H323.
+
+## Protocols Importants
+
+### RTP (Real-time Transport Protocol)
+- Maneja la lliurament de dades en temps real, com ara l'àudio i vídeo.
+
+### RTCP (Real-time Transport Control Protocol)
+- Treballa conjuntament amb RTP per proporcionar informació de control i monitorització.
+
+### H323
+- Un dels primers protocols estàndards utilitzats en VoIP per a la comunicació multimèdia.
+
+### SIP (Session Initiation Protocol)
+- Protocol ampliament utilitzat per a la iniciació, modificació i finalització de sessions interactives de comunicació multimèdia.
+
+## Tipus de Servidors en VoIP
+
+- **Servidors de Proxy SIP**: Gestionen les trucades SIP.
+- **Servidors de Registre**: Mantenen informació sobre els usuaris i els seus dispositius.
+- **Servidors de Localització**: Ajuda a trobar la ubicació actual dels usuaris per a dirigir les trucades.
+- **Servidors d'Autenticació**: Verifiquen la identitat dels usuaris abans d'establir les trucades.
+
+# Vulnerabilitats i Atacs al Servei VoIP
+
+## Accessos Desautoritzats i Fraus
+- **Descripció**: Obtenció il·lícita d'accés a serveis VoIP per a ús personal o comercial.
+
+## Vulnerabilitats de la Xarxa Subjacent
+- **Descripció**: Debilitats en la xarxa sobre la qual opera el VoIP, que poden ser explotades per a atacs.
+
+## Atacs de Denegació de Servei (DoS)
+- **Descripció**: Atacs destinats a sobrecarregar el sistema VoIP, impedint el seu funcionament normal.
+
+## Atacs als Dispositius
+- **Descripció**: Compromís de telèfons IP i altres dispositius VoIP.
+
+## Enumeració i Descobriment
+- **Descripció**: Tècniques per descobrir usuaris, números de telèfon, o dispositius en una xarxa VoIP.
+
+## Atacs a Nivell d'Aplicació
+- **Descripció**: Explotació de vulnerabilitats específiques de les aplicacions VoIP.
+
+## Autenticació en VoIP
+- **Descripció**: Exploració de febleses en els mecanismes d'autenticació de VoIP.
+
+## Manipulació de la Senyalització
+- **Descripció**: Alteració de la senyalització per controlar o redirigir trucades.
+
+## Suplantació d'Identitat
+- **Descripció**: Impersonació d'altres usuaris o serveis en una xarxa VoIP.
+
+## Desregistrar i Desconnectar Usuaris
+- **Descripció**: Accions malicioses destinades a desregistrar o desconnectar usuaris del servei.
+
+## Redirecció de Trucades
+- **Descripció**: Canvi del destí de les trucades sense el consentiment de l'usuari.
+
+## Manipulació de la Transmissió
+- **Descripció**: Alteració de l'àudio o altres dades transmeses.
+
+## Eavesdropping (Escoltar Converses)
+- **Descripció**: Intercepció i escolta de converses privades.
+
+## Inserció d'Àudio
+- **Descripció**: Inserció d'àudio addicional en trucades.
+
+## Fuzzing
+- **Descripció**: Enviaments de dades aleatòries o malformades per provocar errors o fallades.
+
+## Atacs DoS
+- **Descripció**: Atacs destinats a interrompre el servei incapacitant el servidor o la xarxa.
+
+
+# Assegurament del Servei VoIP
+
+## Utilització de TLS (Transport Layer Security)
+
+- **Propòsit**: Proporcionar una capa de seguretat addicional mitjançant l'encriptació de les comunicacions.
+- **Aplicació**: Utilitzat per a xifrar el trànsit de senyalització en protocols com SIP.
+
+## Implementació de VPNs (Xarxes Privades Virtuals)
+
+- **Funció**: Establir canals segurs de comunicació a través d'Internet o altres xarxes públiques.
+- **Benefici**: Aïlla el tràfic de VoIP, protegint-lo de l'intercepció o la manipulació en xarxes no segures.
+
+## Protocol SRTP (Secure Real-time Transport Protocol)
+
+- **Descripció**: Una extensió del RTP que proporciona xifratge, autenticació i integritat del missatge.
+- **Ús**: Assegura que les dades de veu i vídeo transmeses siguin confidencials i no manipulades.
+
+## Configuració de VLANs (Xarxes Locals Virtuals)
+
+- **Objectiu**: Separar el tràfic de VoIP del tràfic de dades general de la xarxa.
+- **Avantatge**: Redueix el risc d'atacs de xarxa i millora la qualitat del servei.
+
+## Limitar l'Accés a la Xarxa VoIP
+
+- **Mesures**: Restricció d'accés a la xarxa VoIP només als dispositius autoritzats.
+- **Metodologia**: Utilització de llistes de control d'accés, autenticació fortificada i gestió de dispositius.
+
+## Limitar el Volum de Dades
+
+- **Tècnica**: Establir límits en la quantitat de dades que poden ser enviades o rebudes per la xarxa VoIP.
+- **Propòsit**: Prevenir atac
 
 
 
