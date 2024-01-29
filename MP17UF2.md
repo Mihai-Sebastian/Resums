@@ -3,21 +3,55 @@
 La seguretat informàtica és un aspecte crític en la gestió de serveis IT. És essencial entendre els atacs informàtics per protegir eficaçment els nostres sistemes. Aquests atacs generalment segueixen un cicle de cinc fases:
 
 ## 1. Reconeixement
-En aquesta fase, l'atacant recopila informació sobre el sistema objectiu. Això inclou identificar els punts dèbils, com ara versions de programari desactualitzades o configuracions insegures.
+- **Descripció**: Recopilació d'informació sobre el sistema objectiu.
+- **Mètodes**:
+  - Recerca Passiva: Sense interacció directa amb el sistema.
+  - Recerca Activa: Interacció directa per obtenir informació.
+- **Eines**:
+  - Nmap: Escaneig de ports.
+  - Maltego: Recopilació de dades obertes.
+  - Shodan: Motor de recerca per a dispositius connectats a Internet.
 
 ## 2. Escaneig
-Durant l'escaneig, l'atacant utilitza eines per mapejar la xarxa i identificar serveis exposats. Això pot incloure escanejar ports i buscar vulnerabilitats conegudes.
+- **Descripció**: Examen del sistema per identificar vulnerabilitats.
+- **Mètodes**:
+  - Escaneig de Ports.
+  - Escaneig de Vulnerabilitats.
+  - Escaneig de Xarxa.
+- **Eines**:
+  - Nessus: Escaneig de vulnerabilitats.
+  - Wireshark: Anàlisi de xarxa.
+  - OpenVAS: Escaneig de vulnerabilitats de codi obert.
 
 ## 3. Accés al Sistema
-Una vegada identificades les vulnerabilitats, l'atacant intenta explotar-les per obtenir accés al sistema. Això pot ser a través d'execució de codi remot, injecció SQL, o altres tècniques d'atac.
+- **Objectiu**: Guanyar accés al sistema explotant vulnerabilitats.
+- **Mètodes**:
+  - Explotació de Vulnerabilitats.
+  - Injecció de SQL.
+  - Atacs de Força Bruta.
+- **Eines**:
+  - Metasploit: Plataforma per a l'explotació de vulnerabilitats.
+  - SQLmap: Per a la injecció de SQL.
+  - Hydra: Per a atacs de força bruta.
 
 ## 4. Manteniment de l'Accés
-Un cop dins, l'atacant buscarà mantenir l'accés per a activitats futures. Això pot incloure la instal·lació de backdoors o l'ús de tècniques per evitar la detecció.
+- **Objectiu**: Mantenir l'accés per a futures exploracions o control.
+- **Mètodes**:
+  - Instal·lació de Backdoors.
+  - Rootkits.
+- **Eines**:
+  - Netcat: Per a l'accés a la xarxa.
+  - Meterpreter: Control post-explotació (dins de Metasploit).
 
 ## 5. Esborrat d'Empremtes
-Finalment, l'atacant esforçarà per eliminar qualsevol rastre de l'atac, incloent registres de log i altres evidències que puguin ser utilitzades en una investigació.
-
-Entendre aquestes fases ens ajuda a preveure i prevenir activitats malicioses, protegint així els nostres sistemes informàtics.
+- **Descripció**: Eliminar evidències d'intrusió.
+- **Mètodes**:
+  - Eliminació de Logs.
+  - Ús de Tècniques d'Evasió.
+- **Eines**:
+  - CCleaner: Neteja de sistemes Windows.
+  - BleachBit: Neteja de diferents sistemes operatius.
+  - LogWiper: Eliminació de logs.
 
 # DNS
 
