@@ -495,7 +495,137 @@ Modificar el fitxer de configuració en `/etc/logrotate.d/apache2`, afegint la l
 La configuració adequada del correu electrònic de contacte i la gestió eficient dels logs són elements clau per a la bona administració d'un servidor web Apache, permetent una comunicació efectiva amb els usuaris i un manteniment òptim del sistema.
 
 
+# FTP
+# Què és el Servei FTP?
 
+El Servei FTP (File Transfer Protocol) és un protocol estàndard utilitzat per a la transferència d'arxius entre dos sistemes a través d'una xarxa, com Internet. Es caracteritza per ser una eina essencial per a la compartició de fitxers i l'accés a màquines remotes, independentment dels sistemes d'arxius que utilitzen.
+
+## Objectius Principals
+
+- **Compartició de Fitxers:** Facilita la transferència de fitxers entre màquines remotes, promoguent la col·laboració i l'accés a recursos compartits.
+- **Accés Remot:** Permet als usuaris accedir a màquines remotes per gestionar fitxers.
+- **Independència de Sistemes d'Arxius:** El protocol està dissenyat per treballar sobre diferents sistemes d'arxius, eliminant les barreres entre sistemes operatius diferents.
+- **Transferència Eficaç:** Busca proporcionar una manera ràpida i fiable de transferir dades.
+
+## Deficiències de Seguretat
+
+- **Autenticació Bàsica:** Utilitza noms d'usuari i contrasenyes sense mètodes de seguretat avançats, el que posa en risc la identitat de l'usuari.
+- **Transferència de Contrasenyes en Text Pla:** Les contrasenyes s'envien sense encriptar, fent-les vulnerables a ser capturades per eines de sniffer.
+- **Sessió No Xifrada:** La transferència d'arxius es realitza també en text pla, comprometent la confidencialitat de les dades transferides.
+
+## Funcionament
+
+FTP opera sota una arquitectura client-servidor, on:
+
+- **Servidor FTP:** Dispositiu que ofereix el servei de transferència d'arxius, accessible via la xarxa (local o Internet).
+- **Ports Utilitzats:**
+  - Port 20 per a la transferència de dades.
+  - Port 21 per a comandes de control.
+- **Connexió:** El client s'uneix al servidor mitjançant un port local superior a 1024, connectant-se al port 21 del servidor per a enviar comandes i gestionar la transferència d'arxius.
+
+## Resum
+
+FTP és una eina poderosa per a la gestió de fitxers a distància, però les seves deficiències de seguretat fan que sigui menys idoni per a aplicacions on la confidencialitat i la integritat de les dades són crítiques. Alternatives més segures com SFTP o FTPS són recomanades per a aquestes situacions.
+
+
+# Una Mica d'Història del Servei FTP
+
+El File Transfer Protocol (FTP) és un dels protocols més antics i fonamentals d'Internet, la seva història comença abans fins de la pròpia creació d'Internet.
+
+## Orígens
+
+- **Data de Creació:** El servei FTP va ser creat l'any **1971**, dos anys abans de la data oficial d'aparició d'Internet en 1973.
+- **Necessitat Inicial:** Va sorgir de la necessitat de compartir arxius i aplicacions entre diferents màquines, facilitant així la col·laboració i l'intercanvi de recursos.
+
+## Desafiaments Inicials
+
+- **Localització de Servidors:** Els usuaris necessitaven saber en quina màquina estava ubicat el fitxer que volien descarregar, un repte significatiu sense les eines de cerca avançades d'avui dia.
+- **Eina de Cerca Gopher:** Abans de l'expansió d'Internet, Gopher era l'única eina per cercar informació en xarxes, però tenia limitacions significatives.
+
+## Evolució amb Internet
+
+- **Superació de Desafiaments:** Amb l'arribada d'Internet i el desenvolupament de potents motors de cerca, la localització dels servidors i els fitxers ja no va ser un problema.
+- **Transparència:** La transferència de fitxers mitjançant FTP s'ha integrat de tal manera que, sovint, els usuaris descarreguen fitxers des d'enllaços web sense adonar-se que estan utilitzant FTP.
+
+## Utilització Actual
+
+- **Ampliament Usat:** El servei FTP continua sent àmpliament utilitzat tant a Internet com en xarxes corporatives i Intranets.
+- **Suport Universal:** És suportat per tots els sistemes operatius, i existeix una gran varietat de software basat en FTP.
+- **Diferències Clau:** Els clients FTP varien en termes d'interfície gràfica, funcionalitats i aspectes de seguretat.
+
+## Conclusió
+
+Malgrat els seus inicis humils i els desafiaments inicials, FTP ha perdurat i evolucionat, demostrant ser una eina essencial en la transferència d'arxius a través de les dècades. La seva adaptabilitat i integració amb les tecnologies modernes han fet que segueixi sent rellevant en l'era digital actual.
+
+
+# Característiques dels Servidors FTP
+
+Els servidors FTP, una tecnologia nascuda en els inicis de la informàtica i Internet, segueixen jugant un paper crucial en la transferència d'arxius entre màquines. La seva concepció inicial, condicionada per l'ús extensiu de sistemes Unix en grans sistemes, ha deixat una empremta en el seu disseny que encara perdura avui dia.
+
+## Usuaris en FTP
+
+- **Usuari Local:** Utilitza el seu compte de sistema per connectar-se al servidor FTP. Aquests comptes tenen accés segons els permisos establerts en el sistema d'arxius.
+- **Usuari Anònim:** Pot connectar-se sense necessitat d'un compte específic en el sistema, utilitzant un protocol d'autenticació bàsic. L'accés queda restringit a una part del sistema d'arxius designada per a aquests usuaris.
+
+## Ordres i Accions
+
+Un cop connectats, els usuaris poden realitzar diverses accions a través de comandes FTP específiques, com pujar (put) o descarregar (get) arxius, entre d'altres.
+
+## Modes de Connexió
+
+- **Mode Actiu:** El client comunica al servidor FTP el port que utilitzarà per a la transferència de dades. Això pot requerir configuració addicional en els tallafocs per permetre la connexió entrant.
+- **Mode Passiu:** Iniciat pel client, demana al servidor un port per a la transferència de dades, facilitant la gestió de connexions a través de tallafocs.
+
+## Execució dels Servidors FTP
+
+- **Mode Standalone:** Funciona de manera independent com a procés del sistema.
+- **Mode Superservidor:** Com a procés fill d'inetd o xinetd, gestionant les peticions entrants.
+
+## Administració del Servidor FTP
+
+La tasca de l'administrador implica la gestió de la informació, manteniment del nivell de seguretat, resolució d'incidències, i el control i manteniment del sistema.
+
+## Seguretat i Confidencialitat
+
+Tot i la seva utilitat, el servei FTP té limitacions en termes de seguretat, ja que la transferència d'informació es realitza en text pla. Com a solució a això, han sorgit protocols com SFTP que ofereixen connexions xifrades.
+
+## Tipus d'Arxius en FTP
+
+- **Arxius ASCII:** Text pla, per a intercanvi d'informació textual.
+- **Arxius Binaris:** Per a tot tipus d'arxius no text, com arxius executables, imatges, àudio i vídeo.
+
+La selecció entre transferència en mode ASCII o binari depèn del tipus d'arxiu que s'estigui transferint, optimitzant així l'eficiència i la integritat de les dades transferides.
+
+En resum, els servidors FTP segueixen sent una eina indispensable per a la transferència d'arxius en nombrosos contextos, tot i que els desafiaments de seguretat han motivat l'adopció de protocols més segurs com SFTP.
+
+# Característiques dels Clients FTP
+
+Els clients FTP ofereixen la funcionalitat de connectar-se a servidors FTP per gestionar la transferència d'arxius entre el sistema local i el servidor. Existeixen dues maneres principals d'interactuar amb aquests clients: a través de la consola (mode text) i mitjançant interfícies gràfiques d'usuari (GUI).
+
+## Clients FTP de Consola
+
+- **Funcionament Bàsic:** El client FTP inclòs en la majoria de paquets de servidors FTP opera en mode consola, permetent l'execució directa d'ordres FTP.
+- **Sintaxi d'Ús:** `ftp [nom_maquina | IP]` per iniciar una sessió FTP.
+- **Exemple d'Connexió:** Per connectar-se al servidor `informaticaASIX2.com`, s'introduiria l'ordre, seguida pel nom d'usuari i la contrasenya sol·licitats.
+- **Ordres FTP:** Un cop connectat, es pot fer ús de diverses ordres FTP per gestionar fitxers i directoris. La llista completa d'ordres es pot obtenir amb el caràcter `?`.
+
+## Clients FTP Gràfics
+
+- **Interfície Amigable:** Per als usuaris que prefereixen una interfície més intuïtiva, existeixen nombrosos clients FTP gràfics com gFTP (Linux) i Filezilla (Linux i Windows).
+- **Funcionalitats Avançades:** Aquests programes faciliten la gestió d'arxius amb funcions com arrossegar i deixar anar, gestió de cua de transferències, i configuració de connexions.
+
+## Ús del Navegador Web com a Client FTP
+
+- **Accés via Web:** Els servidors FTP configurats per acceptar connexions web permeten utilitzar el navegador com un client FTP, introduint la URL del servidor FTP.
+- **Sintaxi per Usuaris Anònims:** Directament, introduint `ftp://nom_servidorFTP/` a la barra d'adreces del navegador.
+- **Sintaxi per Usuaris Registrats:** Si l'usuari té un compte, la connexió requereix la introducció de les credencials en la forma `ftp://login_usuari:contrasenya@nom_servidorFTP/`.
+- **Exemple de Connexió:** Per a connectar-se com a usuari anònim al servidor `ftp.rediris.es`, s'introduiria `ftp://ftp.rediris.es` al navegador.
+
+La flexibilitat en la gestió d'arxius i la varietat d'opcions per connectar-se a servidors FTP, tant des de clients de consola com gràfics o fins i tot a través del navegador web, ofereixen a l'usuari una àmplia gamma de eines per a la transferència eficient d'arxius.
+
+
+
+# PDF 4 i 5 AL MOODLE
 
 
 
