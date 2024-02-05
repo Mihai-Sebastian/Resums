@@ -1,3 +1,4 @@
+# PDF1
 # Resum del Servei Web
 
 ## Descripció General
@@ -190,6 +191,177 @@ Apache s'enriqueix amb diversos projectes associats per augmentar la seva funcio
 - Per a versions instal·lades via gestor de paquets:
   - Arrencada: `# /etc/init.d/apache2 start`
   - Aturada: `# /etc/init.d/apache2 stop`
+
+# PDF2
+# Estructura de Carpetes i Fitxers de Configuració d'Apache
+
+## Fitxers de Configuració Principals
+
+- **apache2.conf**: Fitxer principal de configuració d'Apache. Configura els valors per defecte.
+- **ports.conf**: Especifica els ports per als "virtual hosts". Important per configurar servidors HTTPS.
+- **envvars**: Defineix les variables d'entorn necessàries per al funcionament d'Apache.
+
+## Subcarpetes Importants
+
+- **sites-available**: Conté els fitxers de configuració dels "virtual hosts". Inclou un de tipus HTTP (`000-default.conf`) i un altre de tipus HTTPS (`default-ssl.conf`).
+- **sites-enabled**: Conté enllaços als fitxers de "sites-available" activats.
+- **mods-available**: Ubica els fitxers de mòduls disponibles. Cada mòdul té un arxiu `.load` (imprescindible) i un `.conf` (opcional).
+- **mods-enabled**: Conté enllaços als fitxers de "mods-available" activats.
+- **conf-available**: Conté trossos de configuració específics com si fossin part de `apache2.conf`.
+- **conf-enabled**: Conté enllaços als fitxers de "conf-available" activats.
+
+## Nota sobre els Virtual Hosts
+
+- Els fitxers .conf dels "virtual hosts" són llegits en ordre alfabètic, d'aquí que `000-default.conf` sigui el primer en ser processat.
+
+## Gestió de Configuració
+
+- Per activar o desactivar "virtual hosts" o mòduls, s'utilitza l'enllaçat simbòlic entre les carpetes "available" i "enabled" amb comandes `ln -s` per crear o esborrar enllaços.
+
+# Activació i Desactivació de Mòduls i "Virtual Hosts" en Apache
+
+Per gestionar els mòduls i els "virtual hosts" sense necessitat d'utilitzar manualment `ln -s`, Apache ofereix un conjunt de comandes senzilles:
+
+- **Activar Mòdul**: `a2enmod nomModul`
+- **Desactivar Mòdul**: `a2dismod nomModul`
+- **Activar Virtual Host**: `a2ensite nomarxiuVH`
+- **Desactivar Virtual Host**: `a2dissite nomarxiuVH`
+
+Cal reiniciar o recarregar el servidor per aplicar els canvis amb:
+- `# /etc/init.d/apache2 restart` o
+- Reiniciar manualment amb `# pkill httpd` seguit de `# ./usr/local/apache2/bin/httpd –f /usr/local/apache2/conf/httpd.conf` per a la versió compilada.
+
+# Configuració General del Servidor Web Apache
+
+- **Fitxer de Configuració**: `httpd.conf` per Apache compilat (`/usr/local/apache2/conf/`) o `apache2.conf` per Apache instal·lat via gestor de programari (`/etc/apache2/`).
+- Configuracions específiques es poden trobar dins la carpeta `conf-available`.
+- Qualsevol canvi en la configuració requereix reiniciar el servei per a la seva activació.
+
+
+# Personalització del Servei Apache
+
+## Usuari d'Execució d'Apache
+
+- **Recomanació de Seguretat**: No executar Apache com a `root` per evitar riscos de seguretat.
+- **Usuari Predeterminat**: Utilitzar `nobody` o un usuari creat específicament (normalment `www-data` en distribucions Linux modernes).
+- **Configuració**: Especificar l'usuari amb el paràmetre `User nobody`. Tot i això, es recomana utilitzar les variables d'entorn `APACHE_RUN_USER` i `APACHE_RUN_GROUP` definides a `envvars`.
+- **Permisos Importants**: L'usuari d'Apache ha de poder llegir els directoris publicats i ser el propietari dels directoris de logs.
+
+## Selecció del Port per Atendre Peticions HTTP
+
+- **Port Estàndard**: Per defecte, Apache escolta en el port HTTP estàndard (80).
+- **Canvi de Port**: Es pot canviar el port d'escolta amb el paràmetre `Listen 8008` per, per exemple, evitar conflictes amb altres serveis o per raons de seguretat.
+- **Ports d'Usuari**: Ports superiors a 1024 poden ser utilitzats per qualsevol usuari, permetent la configuració de servidors personals Apache sense necessitat de permisos `root`.
+
+# Mapejats per Servir HTML Bàsic amb Apache
+
+## 'Arrel' o Directori Principal del Servidor Web
+
+- **Ubicació per Defecte**: `/usr/local/apache2/htdocs` o `/var/www/html`. Qualsevol directori afegit aquí serà accessible a través de la URL principal.
+- **Exemple**: Crear un directori "yoda" permet accedir a `http://www.informaticaASIX2.com/yoda`.
+- **Pàgina per Defecte**: `index.html` o `index.htm`, buscades en aquest ordre per a qualsevol URL sense fitxer .htm específic.
+- **Permisos de Directori**: Els directoris han de tenir permissos d'execució per a tothom (755) per permetre l'accés del servidor web.
+
+## Publicació de Pàgines Personals
+
+- **URLs d'Usuari**: Apache permet la publicació de pàgines personals amb URLs del tipus `http://www.informaticaASIX2.com/~usuari`, agafant el contingut de la carpeta `public_html` de l'usuari.
+- **Configuració de Permisos**: L'usuari `root` ha d'obrir els drets d’execució per a tothom als directoris dels usuaris que volen publicar pàgines personals.
+- **Activació del Mòdul `userdir`**:
+  - **Apache Compilat**: Descomentar la línia referent al mòdul `userdir` en `httpd.conf`.
+  - **Apache via Gestor de Programari**: Activar el mòdul amb `a2enmod` o creant enllaços a `mods-enabled`.
+
+# Configuració de Noves URL contra Directoris Específics del Disc amb Apache
+
+Per vincular noves URL a directoris específics fora de la carpeta arrel (`/usr/local/apache2/htdocs` o `/var/www/html`), utilitzem la directiva `Alias`:
+
+```apache
+Alias /jedis /home/jedis/web/
+
+<Directory /home/jedis/web/>
+  Options Indexes FollowSymLinks
+  # Permet seguir enllaços simbòlics i aplicar directives del mòdul dir.
+  AllowOverride None
+  # Indica si els fitxers .htaccess seran ignorats o no.
+  Require all granted
+  # Permet accés complet a aquest directori.
+</Directory>
+```
+
+## Exemple de Configuració
+Per crear una nova URL http://www.informaticaASIX2.com/jedis que apunti al directori /home/jedis/web, s'afegiria a la configuració d'Apache:
+```
+Alias /jedis /home/jedis/web/
+<Directory /home/jedis/web/>
+  Options Indexes FollowSymLinks
+  AllowOverride None
+  Require all granted
+</Directory>
+```
+
+## Consideracions Importants
+
+- **Permisos de Directori**: Assegureu-vos que tots els directoris en la cadena fins al directori final tenen els permisos adequats perquè l'usuari sota el qual s'executa Apache (`www-data`) pugui accedir-hi.
+- **Missatge d'Accés Denegat**: Si apareix un missatge d'accés denegat, reviseu els permisos dels directoris i els registres d'errors d'Apache (`/usr/local/apache2/logs/error_log` o `/var/log/apache2/error_log`) per detalls específics.
+- **Extensions de la Pàgina Index**: La configuració d'Apache permet múltiples extensions per a la pàgina index per defecte, com `index.html`, `index.htm`, etc., a través del fitxer `dir.conf`.
+
+
+# Mapejats per Utilitzar Aplicacions Tipus CGI amb Apache
+
+Apache permet executar aplicacions CGI, que normalment són scripts fets amb llenguatge shell de Linux o Perl.
+
+## Directori per a CGI
+
+- **Ubicació per Defecte**: `/usr/local/apache2/cgi-bin` o `/usr/lib/cgi-bin`
+- **Accés via Web**: Les aplicacions CGI poden ser executades des de `http://www.informaticaASIX2.com/cgi-bin/nom_executable`
+
+## Exemple d'Ús
+
+Si guardem un script anomenat `test-cgi` (amb drets d'execució per a tothom) dins del directori CGI, es pot executar accedint a:
+
+
+## Activació del Mòdul CGI
+
+- Important: Necessiteu activar el mòdul CGI si encara no està actiu. Això es pot fer amb la comanda `a2enmod cgi` o bé, en sistemes que no utilitzin aquesta eina, assegurant-se que el mòdul CGI està habilitat dins la configuració d'Apache.
+
+## Consideracions
+
+- **Execució des de Pàgines Web**: És comú executar scripts CGI des de pàgines web mitjançant enllaços o passant paràmetres.
+- **Desenvolupament de Funcionalitats**: Amb els scripts CGI, es poden crear pàgines web interactives, formularis de recollida de dades, comptadors de visites, etc.
+
+Aquesta configuració obre la porta a una major interactivitat dins dels serveis web, permetent la creació de contingut dinàmic i la recollida de dades a través de formularis.
+
+
+# Control d'Accés als Continguts del Servidor Apache
+
+## Preparació per a Zones Restringides
+
+Per permetre al servidor web Apache gestionar zones d'accés restringit, cal habilitar l'ús de fitxers `.htaccess` per a la configuració de restriccions d'accés.
+
+### Configuració General per a `.htaccess`
+
+Modifica la configuració d'Apache per permetre l'ús de fitxers `.htaccess` amb restriccions d'accés:
+
+```apache
+<Directory />
+  Options FollowSymLinks
+  AllowOverride AuthConfig
+</Directory>
+```
+
+Per aplicar restriccions només a un directori específic, utilitza l'etiqueta <Directory> apuntant al directori desitjat:
+
+```
+<Directory /home/jedis/web/>
+  Options Indexes FollowSymLinks
+  AllowOverride AuthConfig
+  Require all granted
+</Directory>
+```
+# Reiniciar Apache en sistemes utilitzant systemd
+sudo systemctl restart apache2
+
+# O, en sistemes que utilitzen init.d
+sudo /etc/init.d/apache2 restart
 
 
 
