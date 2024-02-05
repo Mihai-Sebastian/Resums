@@ -1,0 +1,203 @@
+# Resum del Servei Web
+
+## Descripció General
+- El **servei web** permet la publicació de pàgines web amb continguts atractius, accessibles des d’arreu del món.
+- Aquests documents, majoritàriament en format HTML, inclouen també imatges, programes cgi d’entorn web, entre d’altres.
+
+## Requisits del Servidor Web
+- Ha d’**allotjar fitxers HTML, imatges**, etc., en directoris específics.
+- Capaç d’entendre i gestionar diversos tipus d’extensió d’arxius.
+- Ha d’incorporar aplicacions de mercat com **Java, JavaScript, Oracle, XML, Flash, vídeo MPEG**, i adaptar-se ràpidament a noves aplicacions.
+- **Seguretat**: Implementació de protocols segurs (exemple: https amb SSL) per a la protecció de la informació.
+
+## Apache: Una Aplicació-Base per al Servidor Web
+- **Apache** es destaca com una aplicació base ideal per al servidor web.
+- Avantatges:
+  - **Fiabilitat, potència, flexibilitat, adaptabilitat, eficiència**, i ràpida resposta.
+  - Constant evolució per adaptar-se al món d’Internet.
+  - És un **programa de lliure distribució**.
+
+
+# Requeriments per a un Servei Web amb Apache
+
+## Requeriments a Nivell d'Equip Servidor
+
+- **Espai de Disc**: Necessari per emmagatzemar l'estructura de la web.
+- **Connexió de Xarxa**: Ha de ser bona, encara que el consum de CPU és baix.
+- **Consum de RAM**: Pot ser puntual, augmentant en moments de descàrrega d'arxius via http.
+- **Processos d'Apache**: Inicia amb vuit processos "httpd" i s'adapta segons la demanda.
+- **Recursos Mínims**: Servidors amb recursos limitats poden experimentar lentitud en aplicacions cgi o connexions https.
+- **Uso de la Web**: Per pàgines estàtiques, preocupar-se pel disc dur. Per aplicacions dinàmiques, es requereix més CPU i RAM.
+
+## Requeriments a Nivell dels Clients
+
+- **Navegador Web**: Essencial per accedir al contingut del servidor.
+- **Publicació de Continguts**: Necessita un editor HTML i accés al servidor via FTP, utilitzant eines com Filezilla.
+
+## Requeriments a Nivell de Xarxa
+
+- **Connexió de 10Mbits**: Suficient per un rendiment acceptable en usos esporàdics.
+- **Millora a 100 Mbit/s**: Recomanat per descàrregues freqüents de fitxers grans, per millorar la velocitat de descàrrega i el temps de resposta.
+
+
+
+  # Descripció de l'Aplicació "Apache"
+
+## Introducció
+
+- **Popularitat**: Apache és un dels servidors web més utilitzats a nivell mundial, amb una quota de mercat propera al 65%.
+- **Orígens**: Va començar com un conjunt de "parxes" (d'aquí el nom, A PAtCHy sErver) per al servidor WWW de NCSA a principis de 1995.
+- **Objectius**: Es va proposar ser el servidor web més ràpid, eficient i funcional sota l'enfocament de lliure distribució.
+- **Llicència**: Regit per la GNU General Public License, evidenciant el seu compromís amb el programari de lliure distribució.
+- **Comunitat**: Desenvolupat per un gran equip de voluntaris a nivell mundial, superant servidors web de grans companyies com Microsoft i Netscape.
+- **Suport d'IBM**: La companyia IBM va ser atreta pel projecte, oferint suport tant a nivell de suport com de desenvolupament.
+
+
+
+# Característiques Generals d'Apache
+
+- **Multiplataforma**: Funciona en diversos sistemes operatius.
+- **Protocols HTTP Actualitzats**: S'adapta als canvis i necessitats actuals del protocol HTTP.
+- **Modularitat**: Permet la personalització i l'adaptació a diferents entorns i necessitats mitjançant l'ús de mòduls.
+- **Desenvolupament Obert**: Beneficia de la contribució comunitària en forma de noves idees, registres d'errors i solucions.
+- **Extensibilitat**: Capacitat d'incorporar extensions com PHP per augmentar les funcionalitats.
+
+# El Protocol HTTP
+
+- **Bàsics del Protocol**: Facilita la comunicació entre clients i servidors a través de la connexió TCP, amb peticions i respostes.
+- **Operacions HTTP 1.0**:
+  - `GET`: Demanar una pàgina.
+  - `HEAD`: Demanar la capçalera d'una pàgina.
+  - `POST`: Enviar dades a una URL.
+- **Estructura de la Petició**:
+  - Mètode d’invocació.
+  - Versió del protocol.
+  - Missatge amb paràmetres de la petició.
+  - Informació del client.
+  - Cos opcional amb més dades.
+- **Resposta del Servidor**:
+  - Línia d'estat amb versió del protocol, èxit o fracàs, i informació rellevant.
+- **Descripció HTTP**: Un protocol de nivell d'aplicació per a sistemes distribuïts, genèric i orientat a objectes, adaptable a diverses aplicacions.
+- **Negociació de Tipus de Dades**: Permet la independència dels tipus de dades utilitzats.
+- **Evolució**: Adaptació a les necessitats d'escalabilitat i rendiment, evolucionant des de la versió 1.0.
+
+
+
+# Versions del Protocol HTTP
+
+## Versió 1.0
+
+- **Connexions TCP**: Lentes d'establir degut a la connexió en tres passos i ajust de finestres de recepció.
+- **Establiment de Connexions**: Necessitat d'establir una nova connexió per cada pàgina i imatge, alentint significativament la transmissió de dades.
+- **Rendiment**: Per a transmetre 1Kbyte de dades, podria tardar uns 500 ms.
+
+## Versió 1.1
+
+- **Connexions Persistents**: No es tanquen després de l’enviament de cada part d’un document, reduint la sobrecàrrega per l’establiment de connexions TCP.
+- **Peticions Simultànies**: Permet diverses peticions d’un mateix client en una sola connexió sense esperar la resposta per a cada una.
+- **Negociació de Contingut**: Assignació de diferents valors a les característiques de la comunicació.
+- **Nous Mètodes**:
+  - `DELETE`: Esborrar un recurs del servidor.
+  - `TRACE`: Veure què rep el servidor.
+  - `PUT`: Enviar dades.
+  - `PATCH`: Aplicar correccions.
+  - `COPY`: Copiar recursos.
+  - `MOVE`: Moure recursos.
+  - `LINK`: Establir enllaços.
+  - `OPTIONS`: Obtenir característiques del servidor.
+  - `WRAPPED`: Unir peticions amb seguretat.
+- **Mètode d'Autenticació Encriptat**: Les claus d'accés van encriptades per a la seguretat, fidelitat, i confidencialitat de les dades.
+
+
+
+
+# HTTP Versió 1.2 i Futur del Protocol
+
+## Versió 1.2
+
+- La versió HTTP 1.2 actua com a pont cap a l'HTTP-Next Generation (HTTP-NG), amb l'objectiu de cobrir noves funcionalitats com el comerç electrònic.
+
+## Criteris de Disseny d'HTTP-NG
+
+- **Simplicitat**: Mantenir la facilitat d'implementació com en HTTP/1.0.
+- **Rendiment**: Eficiència en la transmissió d'objectes en xarxes de comunicació.
+- **Asincronia**: Capacitat per fer peticions en paral·lel a través d'una única connexió.
+- **Seguretat**: Encriptació d'objectes transmesos sense imposar polítiques de seguretat específiques.
+- **Autenticació**: Suport per a l'autenticació bilateral i per a la realització de pagaments en línia.
+- **Servidors Intermediaris**: Suport per a la comunicació entre servidors, manteniment de caches, mirrors i proxys.
+- **Visualització Obligatòria de Dades**: Capacitat per exigir la visualització de dades específiques (autor, copyright, llicència).
+- **Informació de Registre**: Possibilitat d'enviar informació de registre entre diferents servidors.
+- **Requeriments de Xarxa**: Independència de la capa de transport, amb especial eficàcia sobre TCP.
+
+## Suport en Apache
+
+- Els avenços d'HTTP ja estan suportats en Apache 1.2.
+- Per a futures versions (com la 3.0), l'objectiu serà el suport complet a HTTP-NG, implementant-lo de manera automàtica per consolidar i augmentar la seva quota de mercat.
+
+# Projectes Associats a Apache
+
+Apache s'enriqueix amb diversos projectes associats per augmentar la seva funcionalitat. Destaquem dos principals:
+
+## PHP
+
+- **Ús**: Extremadament útil per als desenvolupadors d'aplicacions web.
+- **Característiques**:
+  - Fàcil d'utilitzar i molt potent.
+  - Pot substituir la programació CGI.
+  - Ofereix una llibreria de funcions per a l'accés directe a les principals bases de dades (Informix, Oracle, MySQL, PostgreSQL, Adabas...).
+
+## SSL (Secure Socket Layer)
+
+- **Enfocament**: Orientat a la privacitat de les comunicacions, especialment per al comerç electrònic.
+- **Característiques**:
+  - Inclou seguretat mitjançant encriptació i autenticació.
+  - Els mòduls i les llibreries d'encriptació (com RSA de 128 bits, DES, MD5) són de lliure distribució.
+
+## Pàgina Web Principal del Projecte Apache
+
+- **Apache Software Foundation**: El projecte httpd Apache és iniciat i suportat per l'Apache Software Foundation.
+- **URL**: [http://httpd.apache.org/](http://httpd.apache.org/)
+
+# Instal·lació d'Apache
+
+## Opcions d'Instal·lació
+
+- **Descàrrega Directa**: Baixar la versió més actual en format `*.tar.gz` des de la web d'Apache i seguir els passos d'instal·lació manual (`./configure`, `make`, `make install`).
+- **Gestor de Paquets**: Utilitzar `apt-get install apache2` per a instal·lar des del gestor de paquets en Ubuntu.
+
+## Ubicacions d'Instal·lació
+
+- Executables: `/usr/sbin`
+- Fitxer `httpd.pid`: `/var/run`
+- Logs: `/var/log/httpd` o `/var/log/apache2`
+- Arrel de l'estructura web: `/usr/local/apache2/htdocs` o `/var/www/html`
+- Mapejat inicial `cgi-bin`: `/usr/local/apache2/cgi-bin` o `/usr/lib/cgi-bin`
+- Configuració: `/usr/local/apache2/conf` o `/etc/apache2/`
+- Scripts d'arrencada: `/etc/rc?.d/`
+- Documentació en HTML: `/usr/local/apache2/manual` o `/usr/share/doc/apache2`
+
+# Configuració Bàsica
+
+- L'aplicació hauria d'arrencar amb la configuració per defecte, reconeixent el nom del host i donant servei pel port estàndard.
+
+# Arrencada del Servei
+
+- Assegurar que el servei `apache` s'inicia en l'arrencada del sistema i s'atura correctament en el seu apagament.
+- Comprovar si el port 80 està en ús amb `netstat -tulpn | grep :80` per evitar conflictes amb altres versions d'Apache.
+- Per a versions manualment instal·lades:
+  - Arrencada: `# /usr/local/apache2/bin/httpd -f /usr/local/apache2/conf/httpd.conf`
+  - Aturada: `# pkill httpd`
+- Per a versions instal·lades via gestor de paquets:
+  - Arrencada: `# /etc/init.d/apache2 start`
+  - Aturada: `# /etc/init.d/apache2 stop`
+
+
+
+
+
+
+
+
+
+
+
