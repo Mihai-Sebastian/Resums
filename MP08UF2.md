@@ -363,10 +363,136 @@ sudo systemctl restart apache2
 # O, en sistemes que utilitzen init.d
 sudo /etc/init.d/apache2 restart
 
+# Control d'Accés Senzill amb Usuari/Contrasenya
 
+## Creació d'Usuari i Contrasenya
 
+Per restringir l'accés a una part específica del teu lloc web, com l'espai web dels jedis (`http://www.informaticaASIX2.com/jedis`), pots utilitzar un sistema d'autenticació bàsic amb usuari i contrasenya.
 
+1. **Genera el Fitxer de Contrasenyes**:
+   Utilitza `htpasswd` per crear un fitxer de contrasenyes. Si és el primer usuari, utilitza l'opció `-c` per crear el fitxer:
+   
+   ```shell
+   sudo htpasswd -c /etc/apache2/.jedis-passwd luke
+    ```
+Afegeix més usuaris omitint -c:
+```
+sudo htpasswd /etc/apache2/.jedis-passwd anotherUser
+```
 
+Dins del directori que vols protegir (/home/jedis/web), crea un fitxer .htaccess amb el següent contingut:
+```
+AuthType Basic
+AuthUserFile /etc/apache2/.jedis-passwd
+AuthName "Espai web the force awakens"
+Require valid-user
+
+```
+Quan intentis accedir a http://www.informaticaASIX2.com/jedis, el navegador et demanarà l'usuari i la contrasenya. Només els usuaris definits en el fitxer .jedis-passwd podran accedir.
+
+Per canviar la contrasenya d'un usuari existent, executa htpasswd sense l'opció -c:
+```
+sudo htpasswd /etc/apache2/.jedis-passwd luke
+```
+Nota Important
+Assegura't que Apache està configurat per permetre l'ús de fitxers .htaccess amb AllowOverride AuthConfig en la configuració del directori pertinent.
+
+# Resum del Control d'Accés per IP i Combinat en Fitxers de Configuració Apache
+
+## 3.5.3. Control Senzill per Adreça IP
+
+Per facilitar l'accés a les pàgines reservades sense necessitat de recordar contrasenyes, s'implementa un control d'accés basat en l'adreça IP. Això permet que només certs equips puguin accedir a l'espai web destinat als jedis.
+
+- **Adreces IP Permeses:** `192.168.202.21`, `192.168.202.22`, `192.168.202.23`
+- **Configuració Apache:**
+  ```apache
+  Alias /jedis "/home/jedis/web/"
+  <Directory "/home/jedis/web"> 
+      Allow from 192.168.202.21 192.168.202.22 192.168.202.23 
+      Deny from all 
+  </Directory>
+  ```
+Efecte: Només els equips amb les IP esmentades poden accedir a l'espai web dels jedis després de reiniciar el servidor web.
+
+## 3.5.4. Control Combinat, Usuari / IP
+
+Es busca ampliar l'accés a l'espai web "the force awakens" per a tot el temple jedi i també des de l'exterior, però restringint l'accés a informació sensible mitjançant autenticació d'usuari i contrasenya.
+- Estratègia: Combinar el control per IP amb la validació d'usuari i contrasenya.
+  ```
+  <Directory "/home/jedis/web"> 
+      Allow from 192.168.202
+      Deny from all 
+      AuthType Basic 
+      AuthUserFile /etc/httpd/.jedis­passwd 
+      AuthName "Intranet the force awakens" 
+      Require valid­user 
+      Satisfy any 
+  </Directory>
+
+  ```
+
+  - Com Funciona: El paràmetre Satisfy any permet l'accés si es compleix qualsevol de les dues condicions: estar dins la xarxa 192.168.202.x o proporcionar un usuari i contrasenya vàlids des de qualsevol altra xarxa.
+  - Observació Important: Les configuracions dins del fitxer de configuració tenen prioritat sobre les del fitxer .htaccess.
+ 
+# 3.6. Control de l'Aplicació de Monitorització: Apache-status
+
+Apache-status és una eina interna d'Apache que proporciona una pàgina d'estat per monitoritzar la càrrega del servidor web. Aquesta pàgina és útil per a administradors de sistemes i desenvolupadors que necessiten una visió en temps real de la salut i el rendiment del servidor.
+
+## Activació d'Apache-status
+
+Per activar la pàgina d'estat d'Apache, és necessari modificar els fitxers de configuració per "des-comentar" les entrades relacionades. Aquesta acció permet l'accés a una URL específica que mostra l'estat del servidor.
+
+- **Configuració a modificar:**
+  ```apache
+  <Location /stat-web> 
+      SetHandler server-status 
+      Allow from 192.168.202 .informaticaASIX2.com 
+      Deny from all 
+  </Location>
+
+  ```
+
+# Configuració d'Apache: Correu de Contacte i Gestió de Logs
+
+## Correu Electrònic de Contacte
+Per millorar la comunicació entre usuaris i l'administrador del sistema en cas de problemes amb el servidor, es pot definir un correu electrònic de contacte.
+
+- **Directiva a Configurar:**
+```
+ServerAdmin yoda@informaticaASIX2.com
+```
+
+- **Benefici:**
+L'adreça de correu s'inclou automàticament en els missatges d'error mostrats als usuaris, facilitant així la comunicació directa amb l'administrador.
+
+## Gestió de Logs en Apache
+L'Apache registra les activitats del servidor en fitxers de log, essencials per a la monitorització i el diagnòstic de problemes.
+
+### Access_log
+Recull informació sobre totes les peticions realitzades al servidor.
+
+- **Ubicacions Comunes:**
+- `/usr/local/apache2/logs/access_log`
+- `/var/log/apache2/access_log`
+- **Gestió de la Rotació:**
+Per evitar que els logs ocupin massa espai en disc, es realitza una rotació periòdica. La configuració per defecte realitza rotacions diàries, mantenint quatre còpies.
+
+### Error_log
+Registra els errors que s'han produït en el servidor, ajudant en el diagnòstic de problemes.
+
+- **Ubicacions Comunes:**
+- `/usr/local/apache2/logs/error_log`
+- `/var/log/apache2/error_log`
+- **Nivell de Log:**
+Per defecte, es configura a `warn`, però pot ser ajustat per incloure més detalls com `debug`, `info`, `crit`, `emerg`.
+
+### Personalització de la Rotació de Logs
+Es pot ajustar la quantitat de còpies de logs guardades per optimitzar l'ús de l'espai en disc.
+
+- **Exemple de Configuració:**
+Modificar el fitxer de configuració en `/etc/logrotate.d/apache2`, afegint la línia `rotate 2` per limitar a dues les còpies de cada log.
+
+La configuració adequada del correu electrònic de contacte i la gestió eficient dels logs són elements clau per a la bona administració d'un servidor web Apache, permetent una comunicació efectiva amb els usuaris i un manteniment òptim del sistema.
 
 
 
