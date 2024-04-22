@@ -265,4 +265,207 @@ EVENTS {
   
   notifysocket: /var/run/cyrus/socket/notify
 
+## 2.3. Perspectiva general, conceptes i administració del servidor Cyrus IMAP
+
+### 2.3.0. Accés a l'interfície de comandes
+- **Cyradm**: Utilitzat per gestionar el servidor Cyrus IMAP.
+- **Com accedir**:
+  ```bash
+  # cyradm --user cyrus localhost
+  Password:
+  localhost>
+  ```
+## 2.3.1. Espai de noms de les bústies de correu
+
+**Convenció de noms:** Utilitza la convenció netnews, sense distinció entre majúscules i minúscules, però mantenint el format original.
+
+**Restriccions:**
+- No començar o acabar amb un punt.
+- No contenir dos punts seguits.
+
+**Estructura de noms:**
+Per exemple, `user.jvaras` per a l'usuari jvaras, que actua com la seva bústia d'entrada (inbox).
+
+**Administració:**
+Crear i esborrar usuaris implica gestionar els seus inboxes.
+Si un usuari té un inbox, pot subscriure's a més bústies.
+Esborrar l'inbox d'un usuari també esborra totes les seves bústies personals.
+
+## 2.3.2. Llistes de control d'accés (ACL)
+
+**Funció:** Controlar l'accés a cada bústia de correu individual.
+
+**Estructura:**
+Una ACL conté entrades que especifica l'usuari o grup d'usuaris amb permisos específics.
+Permisos possibles inclouen: l (lookup), r (read), s (seen), w (write), i (insert), p (post), c (create), d (delete), a (administer).
+
+**Administradors:**
+Usuaris especificats com a administradors en `/etc/imapd.conf` tenen permisos `l` i `a` sobre totes les bústies.
+Quan es crea una bústia, la seva ACL inicial és una còpia de la de la bústia pare.
+L'ACL de l'inbox d'un nou usuari conté tots els permisos per a aquest usuari.
+
+## Gestió de bústies
+
+**Comandes cyradm:**
+- Crear bústies: `cm user.nomusuari@domini`
+- Llistar bústies: `lm *@domini`
+
+## Administració de dominis virtuals
+
+**Administradors de dominis:**
+Especificats amb un identificador complet, e.g., `admin@domini.com`.
+Té accés només a les bústies del seu domini.
+
+**Administradors globals:**
+Especificats sense qualificador de domini, accedeixen a totes les bústies del servidor.
+Necessiten el `defaultdomain` especificat en `/etc/imapd.conf`.
+Utilitzen noms de bústia qualificats fora del seu `defaultdomain`.
+## 2.3.3. Quotes d'usuari en Cyrus IMAP
+
+### Descripció General
+- **Objectiu**: Limitar l'espai d'emmagatzematge que cada usuari o bústia pot utilitzar.
+- **Càlcul de la Quota**: Es consideren únicament els bytes dels missatges segons la definició a RFC-822 en kilobytes. No s'inclou l'espai utilitzat per índexs de bústia ni caches.
+
+### Funcionament de les Quotes
+- **Quotes Arrel**: Les quotes es poden assignar a qualsevol nivell de la jerarquia de bústies, no necessàriament han de ser bústies.
+- **Aplicació**: Una quota arrel afecta tota la bústia situada al mateix nivell i per sota d'aquesta, sempre que no estiguin sota una altra quota arrel.
+- **Exemple de jerarquia**:
+  - `user.jvaras` (Quota arrel)
+  - `user.jvaras.lists` (Quota arrel)
+  - `user.jvaras.work` (Quota arrel)
+  - Subbústies com `user.jvaras.lists.bulmailing` sota la quota de `user.jvaras.lists`.
+
+### Administració de les Quotes
+- **Creació de Quota Arrel**: Utilitzar `setquota` des de `cyradm`.
+- **Eliminació de Quota**: No es poden eliminar directament mitjançant comandes; cal esborrar els fitxers de configuració pertinents.
+
+### Comportament de les Quotes en la Pràctica
+- **Inserció de Missatges**: Per inserir un missatge en una bústia, l'espai disponible sota la quota arrel ha de ser suficient per no excedir la quota.
+- **Entrega de Correu**: Si l'espai utilitzat no excedeix la quota, els missatges es poden entregar independentment de la seva mida, permetent excepcionalment que la quota sigui sobrepassada temporalment. Això dóna l'oportunitat a l'usuari de manejar la situació.
+
+### Implicacions de la Quota Excedida
+- **Errors d'Entrega**: Si una bústia està sobrepassada, l'enviament de correu nou fallarà amb un error temporal. El sistema d'enviament intentarà la entrega diverses vegades durant uns dies, donant temps a l'usuari de resoldre el problema abans de retornar el correu al remitent.
+
+### Notes Addicionals
+- **Consells per a Administradors**: Es recomana monitoritzar l'ús de les quotes i comunicar-se amb els usuaris quan s'acosten als seus límits per evitar interrupcions en la recepció de correu.
+
+Amb aquesta configuració, Cyrus IMAP proporciona una gestió flexible i potent de l'espai d'emmagatzematge, permetent als administradors controlar i gestionar eficaçment l'ús dels recursos de correu electrònic.
+## 2.3.4. Processos de recuperació de les bases de dades en Cyrus IMAP
+
+### Reconstrucció dels directoris de bústies
+- **Components d'un directori de bústies**:
+  - **Fitxers de missatges**: Un per missatge, en format RFC 822, amb línies separades per CRLF.
+  - **cyrus.header**: Conté un número màgic i informació variable sobre la bústia.
+  - **cyrus.index**: Informació fixa sobre la bústia i els missatges.
+  - **cyrus.cache**: Dades variables dels missatges.
+  - **cyrus.seen**: Estat dels missatges llegits per l'usuari.
+
+- **Ferramenta de reconstrucció**: `cyrreconstruct` (en Debian `cyrreconstruct`).
+  - **Funció**: Recuperar fitxers corruptes, preservant els noms dels flags, estat dels flags i la data interna basada en fitxers de missatges existents.
+  - **Nota**: No ajusta l'ús de la quota; després d'executar `cyrreconstruct`, s'ha d'executar `quota -f` per reajustar les quotes segons els fitxers de quota arrel.
+
+### Reconstrucció de les quotes arrel
+- **Ubicació**: Subdirectori `quota` dins el directori de configuració (`configdirectory`).
+  - Conté un fitxer per cada quota arrel amb l'ús de la quota i els límits.
+- **Ferramenta de recalcul de quota**: `quota -f`.
+  - **Funció**: Recalcula l'ús de cada quota arrel. Per eliminar una quota arrel, esborra el fitxer de la quota i executa `quota -f`.
+
+### El fitxer de bústies
+- **Importància**: És el fitxer més crític, contenint una llista ordenada de totes les bústies, quotes arrel i ACLs.
+- **Recuperació**: No hi ha eines per reconstruir un fitxer de bústies danyat; cal realitzar còpies de seguretat freqüents.
+
+### Subscripcions
+- **Ubicació**: Subdirectori `user` dins el directori de configuració.
+  - Conté un fitxer `.sub` per usuari amb les seves subscripcions a bústies.
+- **Recuperació de subscripcions**: Restaura els fitxers des de còpies de seguretat, ja que no hi ha eines de recuperació.
+
+### Logging
+- **Ubicació dels logs**: Subdirectori `log` dins el directori de configuració, amb logs per usuari.
+- **Funcions del servidor IMAP**: Envia logs al syslog local amb diversos nivells de gravetat com CRIT, ERR, WARNING, NOTICE, i INFO.
+
+### El directori proc
+- **Funció**: Conté un fitxer per cada procés actiu, amb informació com el host del client, login de l'usuari, i bústia seleccionada.
+- **Purga**: Els fitxers dins `proc` es purguen al reiniciar el servidor.
+
+Aquesta secció ofereix una visió completa sobre els mecanismes de recuperació i manteniment de les bases de dades en el servidor Cyrus IMAP, destacant la importància de les pràctiques de backup regulars i la gestió adequada dels recursos del servidor.
+
+## 2.4. Configuració de bústies de correu
+
+L'administració de les bústies de correu es realitza mitjançant el programa cyradm. 
+
+S'haurà d'utilitzar un dels administradors definits al fitxer `/etc/imapd.conf` per connectar-nos, fent el següent:
+
+```bash
+/usr/bin/cyradm --user cyrus localhost
+```
+El parell usuari/contrasenya s'establirà utilitzant la base de dades d'usuaris `/etc/sasldb2` mitjançant el programa `sasldbpasswd2`, com s'ha explicat anteriorment.
+
+Es recomana utilitzar l'usuari cyrus com a administrador. Per tant, procedirem a donar-lo d'alta:
+
+```bash
+saslpasswd2 -c cyrus
+```
+En aquests moments, la nostra base de dades d'usuaris conté els usuaris jvaras i cyrus, com es pot veure executant:
+
+```bash
+sasldblistusers2
+```
+- jvaras@servidor-primari: userPassword
+- cyrus@servidor-primari: userPassword
+- jvaras@informaticaASIX2.com: userPassword
+Ara ja es pot accedir a l'administració de les bústies de Cyrus mitjançant la següent comanda:
+
+```bash
+/usr/bin/cyradm --user cyrus localhost
+```
+Un cop dins, la comanda `help` ens mostrarà una descripció de les comandes disponibles i els seus alies. D'entre totes, els d'ús més freqüent són els següents:
+
+| Comanda       | Àlies | Funció                          | Sintaxi                           | Exemples               |
+|---------------|-------|---------------------------------|-----------------------------------|------------------------|
+| createmailbox | cm    | Crear bústies de correu         | cm <bústia>                      | cm user.jvaras         |
+| deletemailbox | dm    | Esborrar bústies de correu      | dm <bústia>                      | dm user.jvaras         |
+| listacl       | lam   | Llistar les ACL d'una bústia   | lam <bústia>                     | lam user.jvaras        |
+| setacl        | sam   | Establir les ACL en una bústia | sam <bústia> <usuari> <permisos> | sam user.jvaras jvaras lrswipcda |
+| deleteacl     | dam   | Esborrar les ACL d'una bústia  | dam <bústia> <usuari>            | dam user.jvaras jvaras |
+
+Notes:
+
+- La paraula clau `all` agrupa tots els permisos.
+- Per assignar permisos a un grup UNIX s'utilitza la forma `group:nom_grup`.
+- Un grup UNIX ha d'existir al fitxer `/etc/group`. Els usuaris afegits a aquest grup manualment seran bústies de correu creades amb el programa cyradm, no usuaris de sistema (encara que pot existir una correspondència, però sense cap relació).
+- Encara que l'usuari cyrus tingui permisos implícits d'administració sobre totes les bústies, és necessari fer-los explícits per a executar algunes comandes sobre elles (per exemple, per a esborrar-les). Una comanda de l'estil `sam user.bústia cyrus all` solucionaria el problema, ja que s'heretarien els permisos a les subbústies.
+
+En aquest punt, podem crear una bústia qualsevol amb propòsits de prova i establir els permisos de la següent forma:
+
+```bash
+cyradm --user cyrus localhost
+```
+Password:
+* localhost> cm user.jvaras
+* localhost> lam user.jvaras
+* jvaras lrswipcda
+
+En aquest moment hauríem de ser capaços de donar d'alta un compte de correu, utilitzant el protocol IMAP en el nostre client de correu favorit i connectant-nos al servidor utilitzant l'usuari definit amb `saslpasswd2`, a la bústia del mateix nom creada amb `cyradm`.
+
+De la mateixa forma, també podem utilitzar l'eina `imtest` (`/usr/bin/imtest`), inclosa en el paquet `cyrus-clients-2.4`, per a comprovar el seu funcionament correcte. En el següent exemple s'utilitza el mecanisme més bàsic d'autenticació, que és `login`.
+```
+$ imtest -a jvaras -w <contrasenya> -m login localhost
+S: * OK servidor Cyrus IMAP4 v2.1.16-IPv6-Debian-2.1.16-6 server ready
+C: C01 CAPABILITY
+S: * CAPABILITY IMAP4 IMAP4rev1 ACL QUOTA LITERAL+ MAILBOX-REFERRALS
+NAMESPACE UIDPLUS ID NO_ATOMIC_RENAME UNSELECT CHILDREN MULTIAPPEND
+SORT THREAD=ORDEREDSUBJECT THREAD=REFERENCES IDLE AUTH=NTLM
+AUTH=DIGEST-MD5 AUTH=CRAM-MD5 LISTEXT LIST-SUBSCRIBED ANNOTATEMORE
+S: C01 OK Completed
+C: L01 LOGIN jvaras {8}
+S: + go ahead
+C: <omitted>
+S: L01 OK User logged in
+Authenticated.
+Security strength factor: 0
+Polsant Ctrl+C abandonarem el programa de proves:
+C: Q01 LOGOUT
+Connection closed.
+```
+
 
