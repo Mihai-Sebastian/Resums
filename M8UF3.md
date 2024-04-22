@@ -116,5 +116,153 @@
 - **Configuració per a l'ús de mòduls d'autenticació**: Configurar `pwcheck_method=saslauthd` i `auxprop_plugin=sasldb` en cada programa que utilitza la llibreria.
 - **Creació d'usuaris sense contrasenya**: L'opció `-n` permet crear usuaris sense contrasenya de text pla, encara que es recomana no usar aquesta opció per motius de seguretat.
 
+## 2.2. Cyrus IMAP
+- **Nota**: És important verificar que els paquets no estiguin ja instal·lats en el sistema abans de procedir amb la instal·lació.
+
+### Configuració inicial
+- **Instal·lació opcional**: El paquet `cyrus-clients-2.4` és opcional i proporciona l'eina `imtest`, útil per comprovar el funcionament del servidor.
+- **Creació de directoris**: S'estableix una jerarquia de directoris a `/var/spool/cyrus/mail` per emmagatzemar les bústies de correu, amb propietat de l'usuari `cyrus` i grup `mail`.
+
+### Fitxers de configuració
+1. **/etc/cyrus.conf**: Determina els serveis que s'executaran al iniciar el sistema Cyrus.
+2. **/etc/imapd.conf**: Especifica els paràmetres de configuració del servei IMAP de Cyrus.
+
+### Consideracions addicionals
+- **Dependència de Postfix**: La instal·lació de Cyrus requereix el paquet `postfix`. Durant la instal·lació de Postfix, seleccionar l'opció "Sense configurar" si no es desitja configurar-lo immediatament.
+- **Documentació**: Es recomana llegir la documentació a `/usr/share/doc/cyrus-doc-2.4`, especialment els fitxers `README.Debian.gz`, `README.Debian.simpleinstall.gz`, i `README.postfix.gz` per entendre millor la configuració de Cyrus IMAP i Postfix.
+
+### Permisos i membresia de grups
+- **Permisos sobre `/etc/sasldb2`**: Assegurar que el grup `sasl` té permisos de lectura sobre la base de dades d'usuaris.
+- **Membresia de l'usuari `cyrus`**: Comprovar que l'usuari `cyrus` pertany al grup `sasl`, això és generalment configurat automàticament pels scripts de `cyrus-common-2.4`, però és recomanable verificar-ho.
+
+## 2.2.1. El fitxer /etc/cyrus.conf
+
+### Descripció de les Seccions
+El fitxer de configuració `/etc/cyrus.conf` està estructurat en tres seccions principals:
+
+1. **START**:
+   - Funció: Llista scripts que s'executen abans d'arrancar els serveis principals.
+   - Ús habitual: Inicialització de bases de dades i llançament de serveis de llarga durada.
+
+2. **SERVICES**:
+   - Descripció: És el nucli del fitxer, especifica els processos que s'executaran per gestionar les connexions dels clients a certs sockets, tant TCP com UNIX.
+
+3. **EVENTS**:
+   - Funció: Enumera processos que s'executaran a intervals específics, similar a les funcions del cron.
+   - Ús comú: Realització de tasques de neteja i manteniment programades.
+
+### Configuració Estàndard i Personalització
+- Es recomana realitzar canvis mínims sobre la configuració predeterminada proporcionada per Debian:
+  - Desactivar el servei POP3 comentant la línia corresponent.
+  - No modificar la configuració per a IMAP sobre SSL si no s'utilitza actualment.
+
+### Exemple de Configuració
+```cyrus
+START {
+    recover cmd="/usr/sbin/ctl_cyrusdb -r"
+    delprune cmd="/usr/sbin/ctl_deliver -E 3"
+    tlsprune cmd="/usr/sbin/tls_prune"
+}
+SERVICES {
+    imap cmd="imapd -U 30" listen="imap" prefork=0 maxchild=100
+    lmtpunix cmd="lmtpd" listen="/var/run/cyrus/socket/lmtp" prefork=0 maxchild=20
+    sieve cmd="timsieved" listen="localhost:sieve" prefork=0 maxchild=100
+    notify cmd="notifyd" listen="/var/run/cyrus/socket/notify" proto="udp" prefork=1
+    nntp cmd="nntpd -U 30" listen="nntp" prefork=0 maxchild=100
+}
+EVENTS {
+    checkpoint cmd="/usr/sbin/ctl_cyrusdb -c" period=30
+    delprune cmd="/usr/sbin/ctl_deliver -E 3" at=0401
+    tlsprune cmd="/usr/sbin/tls_prune" at=0401
+}
+ ```
+### Consideracions sobre Sockets
+#### Selecció de Sockets:
+- **En entorns on tots els serveis s'executen en la mateixa màquina, es recomana utilitzar sockets UNIX per un millor rendiment i simplicitat.
+- **Si els serveis com Postfix i Cyrus IMAP operen en màquines separades, caldria utilitzar sockets TCP.
+
+  ## 2.2.2. El fitxer /etc/imapd.conf
+
+### Descripció General
+- **Funció**: Fitxer de configuració principal per al servidor Cyrus IMAP.
+- **Format**: Cada línia té el format "opció: valor". Línies en blanc o que comencen amb `#` són ignorades.
+
+### Opcions de Configuració Importants
+- **`altnamespace`**:
+  - Valor per defecte: `no`
+  - Comportament: Les subcarpetes d'usuari es creen sota `inbox`. Canviar a `yes` per crear-les a la mateixa altura que `inbox`.
+
+- **`lmtp_downcase_rcpt`**:
+  - Valor per defecte: `no` (comentada)
+  - Comportament: Converteix el nom d'usuari a minúscules en LMTP, recomanat per uniformitat.
+
+- **`admins`**:
+  - Usuari `cyrus` típicament té permisos d'administrador sobre totes les bústies.
+  - Configuració: Especificar en `/etc/sasldb2` amb `saslpasswd2 -c cyrus`.
+
+- **`allowanonymouslogin`**:
+  - Valor per defecte: `no`
+  - Comportament: Permet accés anònim, no recomanat llevat que sigui necessari per funcions específiques.
+
+- **`umask`**:
+  - Valor per defecte: `077`
+  - Comportament: Configurar a `037` per permetre lectura pel grup, beneficiós per integració amb altres aplicacions.
+
+- **`allowplaintext`**:
+  - Valor per defecte: `yes`
+  - Comportament: Permet l'autenticació plain text; mantenir fins que el sistema estigui plenament configurat.
+
+- **`sasl_mech_list`**:
+  - Llista dels mecanismes d'autenticació suportats, útil per a la seguretat del servidor.
+
+- **`sasl_minimum_layer`**:
+  - Valor inicial recomanat: `0`
+  - Comportament: Defineix el mínim nivell de seguretat; augmentar una vegada tot estigui funcionant correctament.
+
+- **`sasl_auxprop_plugin`**:
+  - Especificar plugins d'autenticació, com `sasldb` si s'utilitza `sasl_pwcheck_method: auxprop`.
+
+### Configuració dels Sockets
+- **`lmtpsocket`**, **`idlesocket`**, **`notifysocket`**:
+  - Rutes pels sockets UNIX utilitzats per Cyrus. Comprovar que coincideixen amb els especificats en `/etc/cyrus.conf`.
+
+### Reinici o Recàrrega del Servidor
+- Després de qualsevol canvi al fitxer, és necessari fer que el servidor recarregui la configuració:
+  ```bash
+  /etc/init.d/cyrus-imapd restart
+  # o bé
+  /etc/init.d/cyrus-imapd reload
+### Resum de la Configuració Suggestida
+  configdirectory: /var/lib/cyrus
+  
+  defaultpartition: default
+  
+  partition-default: /var/spool/cyrus/mail
+  
+  altnamespace: no
+  
+  lmtp_downcase_rcpt: yes
+  
+  admins: cyrus
+  
+  allowanonymouslogin: no
+  
+  umask: 037
+  
+  allowplaintext: yes
+  
+  sasl_mech_list: PLAIN
+  
+  sasl_minimum_layer: 0
+  
+  sasl_pwcheck_method: saslauthd
+  
+  sasl_auxprop_plugin: sasldb
+  
+  lmtpsocket: /var/run/cyrus/socket/lmtp
+  
+  idlesocket: /var/run/cyrus/socket/idle
+  
+  notifysocket: /var/run/cyrus/socket/notify
 
 
